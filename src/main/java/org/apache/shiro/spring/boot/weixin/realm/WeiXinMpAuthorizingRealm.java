@@ -9,10 +9,8 @@ import org.apache.shiro.spring.boot.weixin.token.WeiXinLoginToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cn.binarywang.wx.miniapp.api.WxMaUserService;
-import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import me.chanjar.weixin.common.error.WxErrorException;
-import me.chanjar.weixin.mp.api.WxMpUserService;
+import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.result.WxMpUser;
 
 /**
@@ -22,10 +20,10 @@ import me.chanjar.weixin.mp.bean.result.WxMpUser;
 public class WeiXinMpAuthorizingRealm extends AbstractAuthorizingRealm {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(WeiXinMpAuthorizingRealm.class);
-	private final WxMpUserService wxMpUserService;
+	private final WxMpService wxMpService;
 	 
-    public WeiXinMpAuthorizingRealm(final WxMpUserService wxMpUserService) {
-        this.wxMpUserService = wxMpUserService;
+    public WeiXinMpAuthorizingRealm(final WxMpService wxMpService) {
+        this.wxMpService = wxMpService;
     }
     
 	@Override
@@ -45,7 +43,7 @@ public class WeiXinMpAuthorizingRealm extends AbstractAuthorizingRealm {
     		
     		WeiXinLoginToken weixinToken =  (WeiXinLoginToken) token;
     		
-    		WxMpUser userInfo = getWxMpUserService().userInfo(weixinToken.getJscode());
+    		WxMpUser userInfo = getWxMpService().getUserService().userInfo(weixinToken.getJscode());
 			if (null == userInfo) {
 				
 			}
@@ -81,8 +79,8 @@ public class WeiXinMpAuthorizingRealm extends AbstractAuthorizingRealm {
 		return info;
 	}
 	
-	public WxMpUserService getWxMpUserService() {
-		return wxMpUserService;
+	public WxMpService getWxMpService() {
+		return wxMpService;
 	}
 
 }
