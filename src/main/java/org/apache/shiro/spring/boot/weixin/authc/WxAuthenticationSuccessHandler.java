@@ -30,23 +30,23 @@ import org.apache.shiro.biz.utils.WebUtils;
 import org.apache.shiro.biz.web.servlet.http.HttpStatus;
 import org.apache.shiro.spring.boot.jwt.JwtPayloadRepository;
 import org.apache.shiro.spring.boot.utils.SubjectJwtUtils;
-import org.apache.shiro.spring.boot.weixin.token.WeiXinLoginToken;
+import org.apache.shiro.spring.boot.weixin.token.WxJsCodeLoginToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.http.MediaType;
 
 import com.alibaba.fastjson.JSONObject;
 
 
-public class WeiXinAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+public class WxAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 	
 	private JwtPayloadRepository jwtPayloadRepository;
 	/** If Check JWT Validity. */
 	private boolean checkExpiry = false;
 	
-	public WeiXinAuthenticationSuccessHandler() {
+	public WxAuthenticationSuccessHandler() {
 	}
 	 
-	public WeiXinAuthenticationSuccessHandler(JwtPayloadRepository jwtPayloadRepository, boolean checkExpiry) {
+	public WxAuthenticationSuccessHandler(JwtPayloadRepository jwtPayloadRepository, boolean checkExpiry) {
 		super();
 		this.jwtPayloadRepository = jwtPayloadRepository;
 		this.checkExpiry = checkExpiry;
@@ -54,7 +54,7 @@ public class WeiXinAuthenticationSuccessHandler implements AuthenticationSuccess
 	
 	@Override
 	public boolean supports(AuthenticationToken token) {
-		return SubjectUtils.isAssignableFrom(token.getClass(), WeiXinLoginToken.class);
+		return SubjectUtils.isAssignableFrom(token.getClass(), WxJsCodeLoginToken.class);
 	}
 
 	@Override

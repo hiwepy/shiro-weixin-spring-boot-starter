@@ -21,12 +21,12 @@ import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
 import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
 
 /**
- * WeiXin Login Token
+ * 微信小程序 Login Token
  * 
  * @author ： <a href="https://github.com/hiwepy">hiwepy</a>
  */
 @SuppressWarnings("serial")
-public class WeiXinLoginToken extends DefaultAuthenticationToken {
+public class WxJsCodeLoginToken extends DefaultAuthenticationToken {
 
 	/**
 	 * 第三方平台js-sdk获取的编码
@@ -70,6 +70,16 @@ public class WeiXinLoginToken extends DefaultAuthenticationToken {
 	 */
 	protected WxMaUserInfo userInfo;
 
+	public WxJsCodeLoginToken( String jscode, String signature,
+			String rawData, String encryptedData,  String iv,  String host) {
+		this.jscode = jscode;
+		this.signature = signature;
+		this.rawData = rawData;
+		this.encryptedData = encryptedData;
+		this.iv = iv;
+		this.setHost(host);
+	}
+	
 	public String getJscode() {
 		return jscode;
 	}

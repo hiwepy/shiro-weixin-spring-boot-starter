@@ -15,11 +15,11 @@
  */
 package org.apache.shiro.spring.boot.weixin.authc;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -27,6 +27,7 @@ import org.apache.shiro.biz.authc.AuthcResponse;
 import org.apache.shiro.biz.utils.WebUtils;
 import org.apache.shiro.biz.web.filter.authc.AbstractTrustableAuthenticatingFilter;
 import org.apache.shiro.biz.web.servlet.http.HttpStatus;
+import org.apache.shiro.spring.boot.weixin.token.WxMpLoginToken;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,14 +39,16 @@ import com.alibaba.fastjson.JSONObject;
  * 小程序微信认证 (authentication)过滤器
  * @author ： <a href="https://github.com/hiwepy">hiwepy</a>
  */
-public class WeiXinMiniappAuthenticatingFilter extends AbstractTrustableAuthenticatingFilter {
+public class WxMpAuthenticatingFilter extends AbstractTrustableAuthenticatingFilter {
 
-	private static final Logger LOG = LoggerFactory.getLogger(WeiXinMiniappAuthenticatingFilter.class);
-    public static final String SPRING_SECURITY_FORM_JSCODE_KEY = "jscode";
+	private static final Logger LOG = LoggerFactory.getLogger(WxMpAuthenticatingFilter.class);
+    public static final String SPRING_SECURITY_FORM_UNIONID_KEY = "unionid";
+    public static final String SPRING_SECURITY_FORM_OPENID_KEY = "openid";
 
-    private String jscodeParameter = SPRING_SECURITY_FORM_JSCODE_KEY;
+    private String unionidParameter = SPRING_SECURITY_FORM_UNIONID_KEY;
+    private String openidParameter = SPRING_SECURITY_FORM_OPENID_KEY;
 	
-	public WeiXinMiniappAuthenticatingFilter() {
+	public WxMpAuthenticatingFilter() {
 		super();
 	}
 	
@@ -121,17 +124,42 @@ public class WeiXinMiniappAuthenticatingFilter extends AbstractTrustableAuthenti
 			return false;
 		}
 	}
-
-    protected String obtainJscode(HttpServletRequest request) {
-        return request.getParameter(jscodeParameter);
+	
+	@Override
+	protected AuthenticationToken createToken(ServletRequest request, ServletResponse response) {
+		// Post && JSON
+		if(WebUtils.isObjectRequest(request)) {
+			try {
+				WxMpLoginRequest loginRequest = objectMapper.readValue(request.getReader(), WxMpLoginRequest.class);
+				return new WxMpLoginToken(loginRequest.getUnionid(), loginRequest.getOpenid(), getHost(request));
+			} catch (IOException e) {
+			}
+		}
+		return new WxMpLoginToken(obtainUnionid(request), obtainOpenid(request), getHost(request));
+	}
+	
+    protected String obtainUnionid(ServletRequest request) {
+        return request.getParameter(unionidParameter);
+    }
+    
+    protected String obtainOpenid(ServletRequest request) {
+        return request.getParameter(openidParameter);
     }
 
-	public String getJscodeParameter() {
-		return jscodeParameter;
+	public String getUnionidParameter() {
+		return unionidParameter;
 	}
 
-	public void setJscodeParameter(String jscodeParameter) {
-		this.jscodeParameter = jscodeParameter;
+	public void setUnionidParameter(String unionidParameter) {
+		this.unionidParameter = unionidParameter;
+	}
+
+	public String getOpenidParameter() {
+		return openidParameter;
+	}
+
+	public void setOpenidParameter(String openidParameter) {
+		this.openidParameter = openidParameter;
 	}
 
 }

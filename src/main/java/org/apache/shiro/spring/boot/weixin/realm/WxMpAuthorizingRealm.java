@@ -5,7 +5,7 @@ import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.biz.realm.AbstractAuthorizingRealm;
 import org.apache.shiro.biz.realm.AuthorizingRealmListener;
-import org.apache.shiro.spring.boot.weixin.token.WeiXinLoginToken;
+import org.apache.shiro.spring.boot.weixin.token.WxMpLoginToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,18 +17,18 @@ import me.chanjar.weixin.mp.bean.result.WxMpUser;
  * WeiXin AuthorizingRealm
  * @author 		： <a href="https://github.com/hiwepy">hiwepy</a>
  */
-public class WeiXinMpAuthorizingRealm extends AbstractAuthorizingRealm {
+public class WxMpAuthorizingRealm extends AbstractAuthorizingRealm {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(WeiXinMpAuthorizingRealm.class);
+	private static final Logger LOG = LoggerFactory.getLogger(WxMpAuthorizingRealm.class);
 	private final WxMpService wxMpService;
 	 
-    public WeiXinMpAuthorizingRealm(final WxMpService wxMpService) {
+    public WxMpAuthorizingRealm(final WxMpService wxMpService) {
         this.wxMpService = wxMpService;
     }
     
 	@Override
 	public Class<?> getAuthenticationTokenClass() {
-		return WeiXinLoginToken.class;// 此Realm只支持SmsLoginToken
+		return WxMpLoginToken.class;// 此Realm只支持SmsLoginToken
 	}
 	
 	@Override
@@ -41,19 +41,18 @@ public class WeiXinMpAuthorizingRealm extends AbstractAuthorizingRealm {
     	
     	try {
     		
-    		WeiXinLoginToken weixinToken =  (WeiXinLoginToken) token;
+    		WxMpLoginToken loginToken =  (WxMpLoginToken) token;
     		
-    		WxMpUser userInfo = getWxMpService().getUserService().userInfo(weixinToken.getJscode());
+    		WxMpUser userInfo = getWxMpService().getUserService().userInfo(loginToken.getOpenid());
 			if (null == userInfo) {
 				
 			}
 			
-			weixinToken.setOpenid(userInfo.getOpenId());
-			weixinToken.setUnionid(userInfo.getUnionId());
+			loginToken.setOpenid(userInfo.getOpenId());
+			loginToken.setUnionid(userInfo.getUnionId());
+			loginToken.setUserInfo(userInfo);
 			
-			
-				
-			info = getRepository().getAuthenticationInfo(weixinToken);
+			info = getRepository().getAuthenticationInfo(loginToken);
     		
 		} catch (AuthenticationException e) {
 			ex = e;
