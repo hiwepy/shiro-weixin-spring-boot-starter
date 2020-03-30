@@ -9,7 +9,7 @@ import org.apache.shiro.spring.boot.weixin.token.WeiXinLoginToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cn.binarywang.wx.miniapp.api.WxMaUserService;
+import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import me.chanjar.weixin.common.error.WxErrorException;
 
@@ -20,10 +20,10 @@ import me.chanjar.weixin.common.error.WxErrorException;
 public class WeiXinMiniappAuthorizingRealm extends AbstractAuthorizingRealm {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(WeiXinMiniappAuthorizingRealm.class);
-	private final WxMaUserService wxMaUserService;
+	private final WxMaService wxMaService;
 	 
-    public WeiXinMiniappAuthorizingRealm(final WxMaUserService wxMaUserService) {
-        this.wxMaUserService = wxMaUserService;
+    public WeiXinMiniappAuthorizingRealm(final WxMaService wxMaService) {
+        this.wxMaService = wxMaService;
     }
     
 	@Override
@@ -44,7 +44,7 @@ public class WeiXinMiniappAuthorizingRealm extends AbstractAuthorizingRealm {
     		WeiXinLoginToken weixinToken =  (WeiXinLoginToken) token;
     		
     		// 根据jscode获取会话信息
-			WxMaJscode2SessionResult sessionResult = getWxMaUserService().getSessionInfo(weixinToken.getJscode());
+			WxMaJscode2SessionResult sessionResult = getWxMaService().jsCode2SessionInfo(weixinToken.getJscode());
 			if (null == sessionResult) {
 				
 			}
@@ -81,8 +81,8 @@ public class WeiXinMiniappAuthorizingRealm extends AbstractAuthorizingRealm {
 		return info;
 	}
 	
-	public WxMaUserService getWxMaUserService() {
-		return wxMaUserService;
+	public WxMaService getWxMaService() {
+		return wxMaService;
 	}
 
 }
