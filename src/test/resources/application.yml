@@ -1,16 +1,30 @@
 server:
     port: 8080
 
-# 单点信息配置，全部可无
-kisso:
-  config:
-    signkey: C691d971EJ3H376G81   # 对称签名密钥
-    cookieName: kisso             # COOKIE 名称
-
 shiro: 
   enabled: true
   sessionManager:
     sessionIdCookieEnabled: true
     sessionIdUrlRewritingEnabled:  true
-  kisso:
-    enabled: true
+    
+################################################################################################################
+###  微信公众号/服务号/小程序配置：
+################################################################################################################
+wx:
+  mp:
+    # 微信公众号的appid.
+    app-id: xxx
+    # 微信公众号的app secret.
+    secret: xxx
+    # 配置存储
+    config-storage:
+      type: memory
+  miniapp:
+    # 微信小程序的appid.
+    appid: xxx
+    # 微信小程序的Secret.
+    secret: xxx
+    token: #微信小程序消息服务器配置的token
+    aesKey: #微信小程序消息服务器配置的EncodingAESKey
+    # 消息格式，XML或者JSON.
+    msg-data-format: JSON
