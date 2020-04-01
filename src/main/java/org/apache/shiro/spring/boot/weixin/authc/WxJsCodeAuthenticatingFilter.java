@@ -131,6 +131,8 @@ public class WxJsCodeAuthenticatingFilter extends AbstractTrustableAuthenticatin
 		}
 	}
 	
+	 
+    
 	@Override
 	protected AuthenticationToken createToken(ServletRequest request, ServletResponse response) {
 		// Post && JSON
