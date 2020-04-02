@@ -42,17 +42,27 @@ import com.alibaba.fastjson.JSONObject;
 public class WxJsCodeAuthenticatingFilter extends AbstractTrustableAuthenticatingFilter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(WxJsCodeAuthenticatingFilter.class);
-    public static final String SPRING_SECURITY_FORM_JSCODE_KEY = "jscode";
+	public static final String SPRING_SECURITY_FORM_JSCODE_KEY = "jscode";
+	public static final String SPRING_SECURITY_FORM_SESSIONKEY_KEY = "sessionKey";
+	public static final String SPRING_SECURITY_FORM_UNIONID_KEY = "unionid";
+	public static final String SPRING_SECURITY_FORM_OPENID_KEY = "openid";
     public static final String SPRING_SECURITY_FORM_SIGNATURE_KEY = "signature";
     public static final String SPRING_SECURITY_FORM_RAWDATA_KEY = "rawData";
     public static final String SPRING_SECURITY_FORM_ENCRYPTEDDATA_KEY = "encryptedData";
     public static final String SPRING_SECURITY_FORM_IV_KEY = "iv";
+    public static final String SPRING_SECURITY_FORM_USERNAME_KEY = "username";
+    public static final String SPRING_SECURITY_FORM_PASSWORD_KEY = "password";
 	
     private String jscodeParameter = SPRING_SECURITY_FORM_JSCODE_KEY;
+    private String sessionKeyParameter = SPRING_SECURITY_FORM_SESSIONKEY_KEY;
+    private String unionidParameter = SPRING_SECURITY_FORM_UNIONID_KEY;
+    private String openidParameter = SPRING_SECURITY_FORM_OPENID_KEY;
     private String signatureParameter = SPRING_SECURITY_FORM_SIGNATURE_KEY;
     private String rawDataParameter = SPRING_SECURITY_FORM_RAWDATA_KEY;
     private String encryptedDataParameter = SPRING_SECURITY_FORM_ENCRYPTEDDATA_KEY;
     private String ivParameter = SPRING_SECURITY_FORM_IV_KEY;
+    private String usernameParameter = SPRING_SECURITY_FORM_USERNAME_KEY;
+    private String passwordParameter = SPRING_SECURITY_FORM_PASSWORD_KEY;
 	
 	public WxJsCodeAuthenticatingFilter() {
 		super();
@@ -139,19 +149,75 @@ public class WxJsCodeAuthenticatingFilter extends AbstractTrustableAuthenticatin
 		if(WebUtils.isObjectRequest(request)) {
 			try {
 				WxJsCodeLoginRequest loginRequest = objectMapper.readValue(request.getReader(), WxJsCodeLoginRequest.class);
-				return new WxJsCodeLoginToken(loginRequest.getJscode(), loginRequest.getSignature(), loginRequest.getRawData(),
-						loginRequest.getEncryptedData(), loginRequest.getIv(), getHost(request));
+				return new WxJsCodeLoginToken(loginRequest.getJscode(), loginRequest.getSessionKey(), loginRequest.getUnionid(), loginRequest.getOpenid(),
+						loginRequest.getSignature(), loginRequest.getRawData(),	loginRequest.getEncryptedData(), loginRequest.getIv(), 
+						loginRequest.getUsername(), loginRequest.getPassword(), getHost(request));
 			} catch (IOException e) {
 			}
 		}
 		
-		return new WxJsCodeLoginToken(obtainJscode(request), obtainSignature(request), obtainRawData(request), 
-				obtainEncryptedData(request), obtainIv(request), getHost(request));
+		String jscode = obtainJscode(request);
+        String sessionKey = obtainSessionKey(request);
+        String unionid = obtainUnionid(request);
+        String openid = obtainOpenid(request);
+        String signature = obtainSignature(request);
+        String rawData = obtainRawData(request); 
+        String encryptedData = obtainEncryptedData(request); 
+        String iv = obtainIv(request);
+        String username = obtainUsername(request); 
+        String password = obtainPassword(request); 
+		
+        if (jscode == null) {
+        	jscode = "";
+        }
+        if (sessionKey == null) {
+        	sessionKey = "";
+        }
+        if (unionid == null) {
+        	unionid = "";
+        }
+        if (openid == null) {
+        	openid = "";
+        }
+        if (signature == null) {
+        	signature = "";
+        }
+        if (rawData == null) {
+        	rawData = "";
+        }
+        if (encryptedData == null) {
+        	encryptedData = "";
+        }
+        if (iv == null) {
+        	iv = "";
+        }
+        if (username == null) {
+        	username = "";
+        }
+        if (password == null) {
+        	password = "";
+        }
+        
+		return new WxJsCodeLoginToken(jscode, sessionKey, unionid, openid, 
+ 				signature, rawData, encryptedData, iv, username, password, getHost(request));
 	}
 
 	protected String obtainJscode(ServletRequest request) {
         return request.getParameter(jscodeParameter);
     }
+	
+	protected String obtainSessionKey(ServletRequest request) {
+        return request.getParameter(sessionKeyParameter);
+    }
+	
+	protected String obtainUnionid(ServletRequest request) {
+        return request.getParameter(unionidParameter);
+    }
+	
+	protected String obtainOpenid(ServletRequest request) {
+        return request.getParameter(openidParameter);
+    }
+	
 	
 	protected String obtainSignature(ServletRequest request) {
         return request.getParameter(signatureParameter);
@@ -164,9 +230,17 @@ public class WxJsCodeAuthenticatingFilter extends AbstractTrustableAuthenticatin
 	protected String obtainEncryptedData(ServletRequest request) {
         return request.getParameter(encryptedDataParameter);
     }
-	
+
     protected String obtainIv(ServletRequest request) {
         return request.getParameter(ivParameter);
+    }
+    
+    protected String obtainUsername(ServletRequest request) {
+        return request.getParameter(usernameParameter);
+    }
+    
+    protected String obtainPassword(ServletRequest request) {
+        return request.getParameter(passwordParameter);
     }
 
 	public String getJscodeParameter() {
@@ -207,6 +281,22 @@ public class WxJsCodeAuthenticatingFilter extends AbstractTrustableAuthenticatin
 
 	public void setIvParameter(String ivParameter) {
 		this.ivParameter = ivParameter;
+	}
+
+	public String getUsernameParameter() {
+		return usernameParameter;
+	}
+
+	public void setUsernameParameter(String usernameParameter) {
+		this.usernameParameter = usernameParameter;
+	}
+
+	public String getPasswordParameter() {
+		return passwordParameter;
+	}
+
+	public void setPasswordParameter(String passwordParameter) {
+		this.passwordParameter = passwordParameter;
 	}
 
 }

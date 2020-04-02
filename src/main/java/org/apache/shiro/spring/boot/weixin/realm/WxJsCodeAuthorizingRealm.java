@@ -2,7 +2,6 @@ package org.apache.shiro.spring.boot.weixin.realm;
 
 import java.util.Objects;
 
-import org.apache.shiro.authc.AccountException;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -49,36 +48,33 @@ public class WxJsCodeAuthorizingRealm extends AbstractAuthorizingRealm {
     		
     		WxJsCodeLoginToken loginToken =  (WxJsCodeLoginToken) token;
     		
-    		// 根据jscode获取会话信息
-			WxMaJscode2SessionResult sessionResult = getWxMaService().jsCode2SessionInfo(loginToken.getJscode());
-			if (null == sessionResult) {
-				
+    		// 表示需要根据jscode获取会话信息
+        	if (!StringUtils.hasText(loginToken.getSessionKey()) && StringUtils.hasText(loginToken.getJscode()) ) {
+        		WxMaJscode2SessionResult sessionResult = getWxMaService().jsCode2SessionInfo(loginToken.getJscode());
+    			if (null != sessionResult) {
+    				loginToken.setOpenid(sessionResult.getOpenid());
+    				loginToken.setUnionid(sessionResult.getUnionid());
+    				loginToken.setSessionKey(sessionResult.getSessionKey());
+    			}
+     		}
+			
+			if(StringUtils.hasText(loginToken.getSessionKey()) && StringUtils.hasText(loginToken.getEncryptedData()) && StringUtils.hasText(loginToken.getIv()) ) {
+				// 解密手机号码信息
+				WxMaPhoneNumberInfo phoneNumberInfo = getWxMaService().getUserService().getPhoneNoInfo(loginToken.getSessionKey(), loginToken.getEncryptedData(), loginToken.getIv());
+				if ( !Objects.isNull(phoneNumberInfo) && StringUtils.hasText(phoneNumberInfo.getPhoneNumber())) {
+					loginToken.setPhoneNumberInfo(phoneNumberInfo);
+			    }
+			}
+			if(Objects.isNull(loginToken.getUserInfo()) && StringUtils.hasText(loginToken.getSessionKey()) && StringUtils.hasText(loginToken.getEncryptedData()) && StringUtils.hasText(loginToken.getIv())) {
+				// 解密用户信息
+				WxMaUserInfo userInfo = getWxMaService().getUserService().getUserInfo(loginToken.getSessionKey(), loginToken.getEncryptedData(), loginToken.getIv() );
+			    if (null == userInfo) {
+			    	loginToken.setUserInfo(userInfo);
+			    }
 			}
 			
-			loginToken.setOpenid(sessionResult.getOpenid());
-			loginToken.setUnionid(sessionResult.getUnionid());
-			loginToken.setSessionKey(sessionResult.getSessionKey());
-			
-			try {
-				info = getRepository().getAuthenticationInfo(loginToken);
-			} catch (AccountException e) {
-				if(StringUtils.hasText(loginToken.getEncryptedData()) && StringUtils.hasText(loginToken.getIv()) ) {
-					
-					// 解密手机号码信息
-					WxMaPhoneNumberInfo phoneNumberInfo = getWxMaService().getUserService().getPhoneNoInfo(sessionResult.getSessionKey(), loginToken.getEncryptedData(), loginToken.getIv());
-					if ( !Objects.isNull(phoneNumberInfo) && StringUtils.hasText(phoneNumberInfo.getPhoneNumber())) {
-						loginToken.setPhoneNumberInfo(phoneNumberInfo);
-				    }
-					
-				 	// 解密用户信息
-					WxMaUserInfo userInfo = getWxMaService().getUserService().getUserInfo(sessionResult.getSessionKey(), loginToken.getEncryptedData(), loginToken.getIv() );
-				    if (null == userInfo) {
-				    	loginToken.setUserInfo(userInfo);
-				    }
-				    
-				}
-				info = getRepository().getAuthenticationInfo(loginToken);
-			}
+			info = getRepository().getAuthenticationInfo(loginToken);
+			 
 		} catch (AuthenticationException e) {
 			ex = e;
 		} catch (WxErrorException e) {

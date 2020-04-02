@@ -33,6 +33,18 @@ public class WxJsCodeLoginToken extends DefaultAuthenticationToken {
 	 */
 	protected String jscode;
 	/**
+	 * 会话密钥
+	 */
+	protected String sessionKey;
+	/**
+	 * 第三方平台UnionID（通常指第三方账号体系下用户的唯一ID）
+	 */
+	protected String unionid;
+	/**
+	 * 第三方平台OpenID（通常指第三方账号体系下某应用中用户的唯一ID）
+	 */
+	protected String openid;
+	/**
 	 * 原始数据字符串
 	 */
 	protected String signature;
@@ -48,19 +60,14 @@ public class WxJsCodeLoginToken extends DefaultAuthenticationToken {
 	 * 加密算法的初始向量
 	 */
 	protected String iv;
-
 	/**
-	 * 第三方平台UnionID（通常指第三方账号体系下用户的唯一ID）
+	 * 绑定的账号
 	 */
-	protected String unionid;
+	protected String username;
 	/**
-	 * 第三方平台OpenID（通常指第三方账号体系下某应用中用户的唯一ID）
+	 * 绑定的账号密码
 	 */
-	protected String openid;
-	/**
-	 * 第三方平台授权登录会话Key
-	 */
-	protected String sessionKey;
+	protected String password;
 	/**
 	 * 手机号码信息
 	 */
@@ -70,13 +77,19 @@ public class WxJsCodeLoginToken extends DefaultAuthenticationToken {
 	 */
 	protected WxMaUserInfo userInfo;
 
-	public WxJsCodeLoginToken( String jscode, String signature,
-			String rawData, String encryptedData,  String iv,  String host) {
+	public WxJsCodeLoginToken( String jscode, String sessionKey, String unionid, String openid, 
+			String signature, String rawData, String encryptedData, String iv, String username, String password, 
+			String host) {
 		this.jscode = jscode;
+		this.sessionKey = sessionKey;
+		this.unionid = unionid;
+		this.openid = openid;
 		this.signature = signature;
 		this.rawData = rawData;
 		this.encryptedData = encryptedData;
 		this.iv = iv;
+		this.username = username;
+		this.password = password;
 		this.setHost(host);
 	}
 	
