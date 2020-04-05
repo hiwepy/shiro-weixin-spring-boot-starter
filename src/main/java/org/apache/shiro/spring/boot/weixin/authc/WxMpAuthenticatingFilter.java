@@ -58,22 +58,7 @@ public class WxMpAuthenticatingFilter extends AbstractTrustableAuthenticatingFil
 	
 	@Override
 	protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
-		// 判断是否无状态
-		if (isSessionStateless()) {
-			// Step 1、生成 Shiro Token 
-			AuthenticationToken token = createToken(request, response);
-			try {
-				//Step 2、委托给Realm进行登录  
-				Subject subject = getSubject(request, response);
-				subject.login(token);
-				//Step 3、执行授权成功后的函数
-				return onAccessSuccess(token, subject, request, response);
-			} catch (AuthenticationException e) {
-				//Step 4、执行授权失败后的函数
-				return onAccessFailure(token, e, request, response);
-			}
-		}
-		return super.isAccessAllowed(request, response, mappedValue);
+		return false;
 	}
 	
 	@Override

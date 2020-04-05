@@ -21,14 +21,12 @@ import java.nio.charset.StandardCharsets;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.biz.authc.AuthcResponse;
 import org.apache.shiro.biz.utils.WebUtils;
 import org.apache.shiro.biz.web.filter.authc.AbstractTrustableAuthenticatingFilter;
 import org.apache.shiro.biz.web.servlet.http.HttpStatus;
 import org.apache.shiro.spring.boot.weixin.token.WxJsCodeAuthenticationToken;
-import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -70,75 +68,33 @@ public class WxJsCodeAuthenticatingFilter extends AbstractTrustableAuthenticatin
 	
 	@Override
 	protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
-		// 判断是否无状态
-		if (isSessionStateless()) {
-			// Step 1、生成 Shiro Token 
-			AuthenticationToken token = createToken(request, response);
-			try {
-				//Step 2、委托给Realm进行登录  
-				Subject subject = getSubject(request, response);
-				subject.login(token);
-				//Step 3、执行授权成功后的函数
-				return onAccessSuccess(token, subject, request, response);
-			} catch (AuthenticationException e) {
-				//Step 4、执行授权失败后的函数
-				return onAccessFailure(token, e, request, response);
-			}
-		}
-		return super.isAccessAllowed(request, response, mappedValue);
+		return false;
 	}
 	
 	@Override
 	protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
-		
-		// 1、判断是否登录请求 
-		if (isLoginRequest(request, response)) {
 			
-			if (isLoginSubmission(request, response)) {
-				if (LOG.isTraceEnabled()) {
-					LOG.trace("Login submission detected.  Attempting to execute login.");
-				}
-				return executeLogin(request, response);
-			} else {
-				String mString = "Authentication url [" + getLoginUrl() + "] Not Http Post request.";
-				if (LOG.isTraceEnabled()) {
-					LOG.trace(mString);
-				}
-				
-				WebUtils.toHttp(response).setStatus(HttpStatus.SC_BAD_REQUEST);
-				response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-				response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
-				
-				// Response Authentication status information
-				JSONObject.writeJSONString(response.getWriter(), AuthcResponse.fail(mString));
-				
-				return false;
+		if (isLoginSubmission(request, response)) {
+			if (LOG.isTraceEnabled()) {
+				LOG.trace("Login submission detected.  Attempting to execute login.");
 			}
-		}
-		// 2、未授权情况
-		else {
-			
-			String mString = "Attempting to access a path which requires authentication. ";
-			if (LOG.isTraceEnabled()) { 
+			return executeLogin(request, response);
+		} else {
+			String mString = "Authentication url [" + getLoginUrl() + "] Not Http Post request.";
+			if (LOG.isTraceEnabled()) {
 				LOG.trace(mString);
 			}
 			
-			// Ajax 请求：响应json数据对象
-			if (WebUtils.isAjaxRequest(request)) {
-				
-				WebUtils.toHttp(response).setStatus(HttpStatus.SC_UNAUTHORIZED);
-				response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-				response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
-				
-				// Response Authentication status information
-				JSONObject.writeJSONString(response.getWriter(), AuthcResponse.fail(mString));
-				
-				return false;
-			}
-			// 普通请求：重定向到登录页
-			saveRequestAndRedirectToLogin(request, response);
+			WebUtils.toHttp(response).setStatus(HttpStatus.SC_BAD_REQUEST);
+			response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+			response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
+			
+			// Response Authentication status information
+			JSONObject.writeJSONString(response.getWriter(), AuthcResponse.fail(mString));
+			
 			return false;
 		}
+		 
 	}
 	
 	 

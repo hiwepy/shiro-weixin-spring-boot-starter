@@ -17,7 +17,6 @@ import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
 import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
-import me.chanjar.weixin.common.error.WxErrorException;
 
 /**
  * WeiXin AuthorizingRealm
@@ -66,25 +65,33 @@ public class WxJsCodeAuthorizingRealm extends AbstractAuthorizingRealm {
      		}
 			
 			if(StringUtils.hasText(loginRequest.getSessionKey()) && StringUtils.hasText(loginRequest.getEncryptedData()) && StringUtils.hasText(loginRequest.getIv()) ) {
-				// 解密手机号码信息
-				WxMaPhoneNumberInfo phoneNumberInfo = getWxMaService().getUserService().getPhoneNoInfo(loginRequest.getSessionKey(), loginRequest.getEncryptedData(), loginRequest.getIv());
-				if ( !Objects.isNull(phoneNumberInfo) && StringUtils.hasText(phoneNumberInfo.getPhoneNumber())) {
-					loginToken.setPhoneNumberInfo(phoneNumberInfo);
-			    }
+				try {
+					// 解密手机号码信息
+					WxMaPhoneNumberInfo phoneNumberInfo = getWxMaService().getUserService().getPhoneNoInfo(loginRequest.getSessionKey(), loginRequest.getEncryptedData(), loginRequest.getIv());
+					if ( !Objects.isNull(phoneNumberInfo) && StringUtils.hasText(phoneNumberInfo.getPhoneNumber())) {
+						loginToken.setPhoneNumberInfo(phoneNumberInfo);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 			if(Objects.isNull(loginRequest.getUserInfo()) && StringUtils.hasText(loginRequest.getSessionKey()) && StringUtils.hasText(loginRequest.getEncryptedData()) && StringUtils.hasText(loginRequest.getIv())) {
-				// 解密用户信息
-				WxMaUserInfo userInfo = getWxMaService().getUserService().getUserInfo(loginRequest.getSessionKey(), loginRequest.getEncryptedData(), loginRequest.getIv() );
-			    if (null == userInfo) {
-			    	loginToken.setUserInfo(userInfo);
-			    }
+				try {
+					// 解密用户信息
+					WxMaUserInfo userInfo = getWxMaService().getUserService().getUserInfo(loginRequest.getSessionKey(), loginRequest.getEncryptedData(), loginRequest.getIv() );
+					if (null == userInfo) {
+						loginToken.setUserInfo(userInfo);
+					}
+				} catch (Exception e) {
+					throw new AuthenticationException(e);
+				}
 			}
 			
 			info = getRepository().getAuthenticationInfo(loginToken);
 			 
 		} catch (AuthenticationException e) {
 			ex = e;
-		} catch (WxErrorException e) {
+		} catch (Exception e) {
 			ex = new AuthenticationException(e);
 		}
 		
