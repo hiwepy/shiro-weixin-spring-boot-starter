@@ -7,7 +7,7 @@ import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.biz.realm.AbstractAuthorizingRealm;
 import org.apache.shiro.biz.realm.AuthorizingRealmListener;
-import org.apache.shiro.spring.boot.weixin.token.WxJsCodeLoginToken;
+import org.apache.shiro.spring.boot.weixin.token.WxJsCodeAuthenticationToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -33,7 +33,7 @@ public class WxJsCodeAuthorizingRealm extends AbstractAuthorizingRealm {
     
 	@Override
 	public Class<?> getAuthenticationTokenClass() {
-		return WxJsCodeLoginToken.class;// 此Realm只支持SmsLoginToken
+		return WxJsCodeAuthenticationToken.class;// 此Realm只支持SmsLoginToken
 	}
 	
 	@Override
@@ -46,7 +46,7 @@ public class WxJsCodeAuthorizingRealm extends AbstractAuthorizingRealm {
     	
     	try {
     		
-    		WxJsCodeLoginToken loginToken =  (WxJsCodeLoginToken) token;
+    		WxJsCodeAuthenticationToken loginToken =  (WxJsCodeAuthenticationToken) token;
     		
     		// 表示需要根据jscode获取会话信息
         	if (!StringUtils.hasText(loginToken.getSessionKey()) && StringUtils.hasText(loginToken.getJscode()) ) {

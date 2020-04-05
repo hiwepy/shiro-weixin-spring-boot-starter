@@ -26,7 +26,7 @@ import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
  * @author ： <a href="https://github.com/hiwepy">hiwepy</a>
  */
 @SuppressWarnings("serial")
-public class WxJsCodeLoginToken extends DefaultAuthenticationToken {
+public class WxJsCodeAuthenticationToken extends DefaultAuthenticationToken {
 
 	/**
 	 * 第三方平台js-sdk获取的编码
@@ -77,7 +77,7 @@ public class WxJsCodeLoginToken extends DefaultAuthenticationToken {
 	 */
 	protected WxMaUserInfo userInfo;
 
-	public WxJsCodeLoginToken( String jscode, String sessionKey, String unionid, String openid, 
+	public WxJsCodeAuthenticationToken( String jscode, String sessionKey, String unionid, String openid, 
 			String signature, String rawData, String encryptedData, String iv, String username, String password, 
 			String host) {
 		this.jscode = jscode;

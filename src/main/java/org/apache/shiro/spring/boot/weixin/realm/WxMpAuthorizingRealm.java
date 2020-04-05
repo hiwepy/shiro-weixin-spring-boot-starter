@@ -5,7 +5,7 @@ import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.biz.realm.AbstractAuthorizingRealm;
 import org.apache.shiro.biz.realm.AuthorizingRealmListener;
-import org.apache.shiro.spring.boot.weixin.token.WxMpLoginToken;
+import org.apache.shiro.spring.boot.weixin.token.WxMpAuthenticationToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +28,7 @@ public class WxMpAuthorizingRealm extends AbstractAuthorizingRealm {
     
 	@Override
 	public Class<?> getAuthenticationTokenClass() {
-		return WxMpLoginToken.class;// 此Realm只支持SmsLoginToken
+		return WxMpAuthenticationToken.class;// 此Realm只支持SmsLoginToken
 	}
 	
 	@Override
@@ -41,7 +41,7 @@ public class WxMpAuthorizingRealm extends AbstractAuthorizingRealm {
     	
     	try {
     		
-    		WxMpLoginToken loginToken =  (WxMpLoginToken) token;
+    		WxMpAuthenticationToken loginToken =  (WxMpAuthenticationToken) token;
     		
     		WxMpUser userInfo = getWxMpService().getUserService().userInfo(loginToken.getOpenid());
 			if (null == userInfo) {

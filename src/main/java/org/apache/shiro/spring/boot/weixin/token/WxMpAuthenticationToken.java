@@ -25,7 +25,7 @@ import me.chanjar.weixin.mp.bean.result.WxMpUser;
  * @author ： <a href="https://github.com/hiwepy">hiwepy</a>
  */
 @SuppressWarnings("serial")
-public class WxMpLoginToken extends DefaultAuthenticationToken {
+public class WxMpAuthenticationToken extends DefaultAuthenticationToken {
 
 	/**
 	 * 第三方平台UnionID（通常指第三方账号体系下用户的唯一ID）
@@ -40,7 +40,7 @@ public class WxMpLoginToken extends DefaultAuthenticationToken {
 	 */
 	protected WxMpUser userInfo;
 	
-	public WxMpLoginToken( String unionid, String openid, String host) {
+	public WxMpAuthenticationToken( String unionid, String openid, String host) {
 		this.unionid = unionid;
 		this.openid = openid;
 		this.setHost(host);

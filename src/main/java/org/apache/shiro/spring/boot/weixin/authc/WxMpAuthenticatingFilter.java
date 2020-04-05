@@ -27,7 +27,7 @@ import org.apache.shiro.biz.authc.AuthcResponse;
 import org.apache.shiro.biz.utils.WebUtils;
 import org.apache.shiro.biz.web.filter.authc.AbstractTrustableAuthenticatingFilter;
 import org.apache.shiro.biz.web.servlet.http.HttpStatus;
-import org.apache.shiro.spring.boot.weixin.token.WxMpLoginToken;
+import org.apache.shiro.spring.boot.weixin.token.WxMpAuthenticationToken;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,11 +131,11 @@ public class WxMpAuthenticatingFilter extends AbstractTrustableAuthenticatingFil
 		if(WebUtils.isObjectRequest(request)) {
 			try {
 				WxMpLoginRequest loginRequest = objectMapper.readValue(request.getReader(), WxMpLoginRequest.class);
-				return new WxMpLoginToken(loginRequest.getUnionid(), loginRequest.getOpenid(), getHost(request));
+				return new WxMpAuthenticationToken(loginRequest.getUnionid(), loginRequest.getOpenid(), getHost(request));
 			} catch (IOException e) {
 			}
 		}
-		return new WxMpLoginToken(obtainUnionid(request), obtainOpenid(request), getHost(request));
+		return new WxMpAuthenticationToken(obtainUnionid(request), obtainOpenid(request), getHost(request));
 	}
 	
     protected String obtainUnionid(ServletRequest request) {

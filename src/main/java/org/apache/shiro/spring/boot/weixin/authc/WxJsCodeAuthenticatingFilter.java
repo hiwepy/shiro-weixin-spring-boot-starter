@@ -27,7 +27,7 @@ import org.apache.shiro.biz.authc.AuthcResponse;
 import org.apache.shiro.biz.utils.WebUtils;
 import org.apache.shiro.biz.web.filter.authc.AbstractTrustableAuthenticatingFilter;
 import org.apache.shiro.biz.web.servlet.http.HttpStatus;
-import org.apache.shiro.spring.boot.weixin.token.WxJsCodeLoginToken;
+import org.apache.shiro.spring.boot.weixin.token.WxJsCodeAuthenticationToken;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -149,7 +149,7 @@ public class WxJsCodeAuthenticatingFilter extends AbstractTrustableAuthenticatin
 		if(WebUtils.isObjectRequest(request)) {
 			try {
 				WxJsCodeLoginRequest loginRequest = objectMapper.readValue(request.getReader(), WxJsCodeLoginRequest.class);
-				return new WxJsCodeLoginToken(loginRequest.getJscode(), loginRequest.getSessionKey(), loginRequest.getUnionid(), loginRequest.getOpenid(),
+				return new WxJsCodeAuthenticationToken(loginRequest.getJscode(), loginRequest.getSessionKey(), loginRequest.getUnionid(), loginRequest.getOpenid(),
 						loginRequest.getSignature(), loginRequest.getRawData(),	loginRequest.getEncryptedData(), loginRequest.getIv(), 
 						loginRequest.getUsername(), loginRequest.getPassword(), getHost(request));
 			} catch (IOException e) {
@@ -198,7 +198,7 @@ public class WxJsCodeAuthenticatingFilter extends AbstractTrustableAuthenticatin
         	password = "";
         }
         
-		return new WxJsCodeLoginToken(jscode, sessionKey, unionid, openid, 
+		return new WxJsCodeAuthenticationToken(jscode, sessionKey, unionid, openid, 
  				signature, rawData, encryptedData, iv, username, password, getHost(request));
 	}
 
