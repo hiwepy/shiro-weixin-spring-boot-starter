@@ -135,13 +135,31 @@ public class WxMpAuthenticatingFilter extends AbstractTrustableAuthenticatingFil
 		if(WebUtils.isObjectRequest(request)) {
 			try {
 				WxMpLoginRequest loginRequest = objectMapper.readValue(request.getReader(), WxMpLoginRequest.class);
-				return new WxMpAuthenticationToken(loginRequest.getUnionid(), loginRequest.getOpenid(), 
-						loginRequest.getUsername(), loginRequest.getPassword() ,getHost(request));
+				return new WxMpAuthenticationToken(loginRequest ,getHost(request));
 			} catch (IOException e) {
 			}
 		}
-		return new WxMpAuthenticationToken(obtainUnionid(request), obtainOpenid(request), obtainUsername(request), 
-				obtainPassword(request), getHost(request));
+		
+		String unionid = obtainUnionid(request);
+        String openid = obtainOpenid(request);
+        String username = obtainUsername(request); 
+        String password = obtainPassword(request); 
+		
+        
+        if (unionid == null) {
+        	unionid = "";
+        }
+        if (openid == null) {
+        	openid = "";
+        }
+        if (username == null) {
+        	username = "";
+        }
+        if (password == null) {
+        	password = "";
+        }
+        WxMpLoginRequest loginRequest = new WxMpLoginRequest(unionid, openid, username, password);
+		return new WxMpAuthenticationToken(loginRequest, getHost(request));
 	}
 	
     protected String obtainUnionid(ServletRequest request) {

@@ -16,6 +16,7 @@
 package org.apache.shiro.spring.boot.weixin.token;
 
 import org.apache.shiro.biz.authc.token.DefaultAuthenticationToken;
+import org.apache.shiro.spring.boot.weixin.authc.WxJsCodeLoginRequest;
 
 import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
 import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
@@ -28,14 +29,8 @@ import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
 @SuppressWarnings("serial")
 public class WxJsCodeAuthenticationToken extends DefaultAuthenticationToken {
 
-	/**
-	 * 第三方平台js-sdk获取的编码
-	 */
-	protected String jscode;
-	/**
-	 * 会话密钥
-	 */
-	protected String sessionKey;
+	protected WxJsCodeLoginRequest principal;
+	
 	/**
 	 * 第三方平台UnionID（通常指第三方账号体系下用户的唯一ID）
 	 */
@@ -45,22 +40,10 @@ public class WxJsCodeAuthenticationToken extends DefaultAuthenticationToken {
 	 */
 	protected String openid;
 	/**
-	 * 原始数据字符串
+	 * 第三方平台授权登录会话Key
 	 */
-	protected String signature;
-	/**
-	 * 校验用户信息字符串
-	 */
-	protected String rawData;
-	/**
-	 * 加密用户数据
-	 */
-	protected String encryptedData;
-	/**
-	 * 加密算法的初始向量
-	 */
-	protected String iv;
-	/**
+	protected String sessionKey;
+    /**
 	 * 手机号码信息
 	 */
 	protected WxMaPhoneNumberInfo phoneNumberInfo;
@@ -69,58 +52,17 @@ public class WxJsCodeAuthenticationToken extends DefaultAuthenticationToken {
 	 */
 	protected WxMaUserInfo userInfo;
 
-	public WxJsCodeAuthenticationToken( String jscode, String sessionKey, String unionid, String openid, 
-			String signature, String rawData, String encryptedData, String iv, String username, String password, 
-			String host) {
-		super(username,  password, true, host);
-		this.jscode = jscode;
-		this.sessionKey = sessionKey;
-		this.unionid = unionid;
-		this.openid = openid;
-		this.signature = signature;
-		this.rawData = rawData;
-		this.encryptedData = encryptedData;
-		this.iv = iv;
+	public WxJsCodeAuthenticationToken( WxJsCodeLoginRequest request, String host) {
+		super(request.getUsername(),  request.getPassword(), true, host);
+		this.principal = request;
+		this.unionid = request.getUnionid();
+		this.openid = request.getOpenid();
+		this.userInfo = request.getUserInfo();
 	}
 	
-	public String getJscode() {
-		return jscode;
-	}
-
-	public void setJscode(String jscode) {
-		this.jscode = jscode;
-	}
-
-	public String getSignature() {
-		return signature;
-	}
-
-	public void setSignature(String signature) {
-		this.signature = signature;
-	}
-
-	public String getRawData() {
-		return rawData;
-	}
-
-	public void setRawData(String rawData) {
-		this.rawData = rawData;
-	}
-
-	public String getEncryptedData() {
-		return encryptedData;
-	}
-
-	public void setEncryptedData(String encryptedData) {
-		this.encryptedData = encryptedData;
-	}
-
-	public String getIv() {
-		return iv;
-	}
-
-	public void setIv(String iv) {
-		this.iv = iv;
+	@Override
+	public Object getPrincipal() {
+		return principal;
 	}
 
 	public String getUnionid() {

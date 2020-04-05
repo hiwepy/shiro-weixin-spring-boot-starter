@@ -149,9 +149,7 @@ public class WxJsCodeAuthenticatingFilter extends AbstractTrustableAuthenticatin
 		if(WebUtils.isObjectRequest(request)) {
 			try {
 				WxJsCodeLoginRequest loginRequest = objectMapper.readValue(request.getReader(), WxJsCodeLoginRequest.class);
-				return new WxJsCodeAuthenticationToken(loginRequest.getJscode(), loginRequest.getSessionKey(), loginRequest.getUnionid(), loginRequest.getOpenid(),
-						loginRequest.getSignature(), loginRequest.getRawData(),	loginRequest.getEncryptedData(), loginRequest.getIv(), 
-						loginRequest.getUsername(), loginRequest.getPassword(), getHost(request));
+				return new WxJsCodeAuthenticationToken(loginRequest, getHost(request));
 			} catch (IOException e) {
 			}
 		}
@@ -197,9 +195,9 @@ public class WxJsCodeAuthenticatingFilter extends AbstractTrustableAuthenticatin
         if (password == null) {
         	password = "";
         }
-        
-		return new WxJsCodeAuthenticationToken(jscode, sessionKey, unionid, openid, 
- 				signature, rawData, encryptedData, iv, username, password, getHost(request));
+        WxJsCodeLoginRequest loginRequest = new WxJsCodeLoginRequest(jscode, sessionKey, unionid, openid, signature, rawData, encryptedData, 
+        		iv, username, password, null);
+		return new WxJsCodeAuthenticationToken(loginRequest, getHost(request));
 	}
 
 	protected String obtainJscode(ServletRequest request) {

@@ -16,6 +16,7 @@
 package org.apache.shiro.spring.boot.weixin.token;
 
 import org.apache.shiro.biz.authc.token.DefaultAuthenticationToken;
+import org.apache.shiro.spring.boot.weixin.authc.WxMpLoginRequest;
 
 import me.chanjar.weixin.mp.bean.result.WxMpUser;
 
@@ -26,7 +27,9 @@ import me.chanjar.weixin.mp.bean.result.WxMpUser;
  */
 @SuppressWarnings("serial")
 public class WxMpAuthenticationToken extends DefaultAuthenticationToken {
-
+	
+	protected WxMpLoginRequest principal;
+	
 	/**
 	 * 第三方平台UnionID（通常指第三方账号体系下用户的唯一ID）
 	 */
@@ -40,11 +43,17 @@ public class WxMpAuthenticationToken extends DefaultAuthenticationToken {
 	 */
 	protected WxMpUser userInfo;
 	
-	public WxMpAuthenticationToken( String unionid, String openid, String username, String password, String host) {
-		super(username,  password, true, host);
-		this.unionid = unionid;
-		this.openid = openid;
+	public WxMpAuthenticationToken( WxMpLoginRequest request, String host) {
+		super(request.getUsername(),  request.getPassword(), true, host);
+		this.principal = request;
+		this.unionid = request.getUnionid();
+		this.openid = request.getOpenid();
 		this.setHost(host);
+	}
+	
+	@Override
+	public WxMpLoginRequest getPrincipal() {
+		return principal;
 	}
 
 	public String getUnionid() {
