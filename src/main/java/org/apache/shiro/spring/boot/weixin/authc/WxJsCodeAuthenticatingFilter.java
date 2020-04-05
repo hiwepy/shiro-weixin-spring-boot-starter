@@ -151,6 +151,7 @@ public class WxJsCodeAuthenticatingFilter extends AbstractTrustableAuthenticatin
 				WxJsCodeLoginRequest loginRequest = objectMapper.readValue(request.getReader(), WxJsCodeLoginRequest.class);
 				return new WxJsCodeAuthenticationToken(loginRequest, getHost(request));
 			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 		

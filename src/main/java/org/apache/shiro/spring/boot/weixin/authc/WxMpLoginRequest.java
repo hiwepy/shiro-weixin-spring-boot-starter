@@ -16,6 +16,7 @@
 package org.apache.shiro.spring.boot.weixin.authc;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -23,6 +24,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * 
  * @author ： <a href="https://github.com/hiwepy">hiwepy</a>
  */
+@JsonIgnoreProperties(ignoreUnknown = true) 
 public class WxMpLoginRequest {
 
 	/**
@@ -43,6 +45,7 @@ public class WxMpLoginRequest {
 	protected String password;
 	
 	@JsonCreator
+	@JsonIgnoreProperties(ignoreUnknown = true) 
 	public WxMpLoginRequest(@JsonProperty("unionid") String unionid, 
 			@JsonProperty("openid") String openid , 
 			@JsonProperty("username") String username ,
