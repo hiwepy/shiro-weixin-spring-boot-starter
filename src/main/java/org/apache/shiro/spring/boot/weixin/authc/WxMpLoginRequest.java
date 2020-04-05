@@ -33,11 +33,24 @@ public class WxMpLoginRequest {
 	 * 第三方平台OpenID（通常指第三方账号体系下某应用中用户的唯一ID）
 	 */
 	protected String openid;
+	/**
+	 * 绑定的账号
+	 */
+	protected String username;
+	/**
+	 * 绑定的账号密码
+	 */
+	protected String password;
 	
 	@JsonCreator
-	public WxMpLoginRequest(@JsonProperty("unionid") String unionid, @JsonProperty("openid") String openid) {
+	public WxMpLoginRequest(@JsonProperty("unionid") String unionid, 
+			@JsonProperty("openid") String openid , 
+			@JsonProperty("username") String username ,
+			@JsonProperty("password") String password) {
 		this.unionid = unionid;
 		this.openid = openid;
+		this.username = username;
+		this.password = password;
 	}
 
 	public String getUnionid() {
@@ -56,4 +69,20 @@ public class WxMpLoginRequest {
 		this.openid = openid;
 	}
 
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	
 }

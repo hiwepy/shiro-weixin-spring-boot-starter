@@ -44,9 +44,13 @@ public class WxMpAuthenticatingFilter extends AbstractTrustableAuthenticatingFil
 	private static final Logger LOG = LoggerFactory.getLogger(WxMpAuthenticatingFilter.class);
     public static final String SPRING_SECURITY_FORM_UNIONID_KEY = "unionid";
     public static final String SPRING_SECURITY_FORM_OPENID_KEY = "openid";
-
+    public static final String SPRING_SECURITY_FORM_USERNAME_KEY = "username";
+    public static final String SPRING_SECURITY_FORM_PASSWORD_KEY = "password";
+    
     private String unionidParameter = SPRING_SECURITY_FORM_UNIONID_KEY;
     private String openidParameter = SPRING_SECURITY_FORM_OPENID_KEY;
+    private String usernameParameter = SPRING_SECURITY_FORM_USERNAME_KEY;
+    private String passwordParameter = SPRING_SECURITY_FORM_PASSWORD_KEY;
 	
 	public WxMpAuthenticatingFilter() {
 		super();
@@ -131,11 +135,13 @@ public class WxMpAuthenticatingFilter extends AbstractTrustableAuthenticatingFil
 		if(WebUtils.isObjectRequest(request)) {
 			try {
 				WxMpLoginRequest loginRequest = objectMapper.readValue(request.getReader(), WxMpLoginRequest.class);
-				return new WxMpAuthenticationToken(loginRequest.getUnionid(), loginRequest.getOpenid(), getHost(request));
+				return new WxMpAuthenticationToken(loginRequest.getUnionid(), loginRequest.getOpenid(), 
+						loginRequest.getUsername(), loginRequest.getPassword() ,getHost(request));
 			} catch (IOException e) {
 			}
 		}
-		return new WxMpAuthenticationToken(obtainUnionid(request), obtainOpenid(request), getHost(request));
+		return new WxMpAuthenticationToken(obtainUnionid(request), obtainOpenid(request), obtainUsername(request), 
+				obtainPassword(request), getHost(request));
 	}
 	
     protected String obtainUnionid(ServletRequest request) {
@@ -144,6 +150,14 @@ public class WxMpAuthenticatingFilter extends AbstractTrustableAuthenticatingFil
     
     protected String obtainOpenid(ServletRequest request) {
         return request.getParameter(openidParameter);
+    }
+    
+    protected String obtainUsername(ServletRequest request) {
+        return request.getParameter(usernameParameter);
+    }
+    
+    protected String obtainPassword(ServletRequest request) {
+        return request.getParameter(passwordParameter);
     }
 
 	public String getUnionidParameter() {
@@ -162,4 +176,20 @@ public class WxMpAuthenticatingFilter extends AbstractTrustableAuthenticatingFil
 		this.openidParameter = openidParameter;
 	}
 
+	public String getUsernameParameter() {
+		return usernameParameter;
+	}
+
+	public void setUsernameParameter(String usernameParameter) {
+		this.usernameParameter = usernameParameter;
+	}
+
+	public String getPasswordParameter() {
+		return passwordParameter;
+	}
+
+	public void setPasswordParameter(String passwordParameter) {
+		this.passwordParameter = passwordParameter;
+	}
+	
 }

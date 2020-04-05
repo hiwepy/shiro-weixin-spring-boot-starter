@@ -61,14 +61,6 @@ public class WxJsCodeAuthenticationToken extends DefaultAuthenticationToken {
 	 */
 	protected String iv;
 	/**
-	 * 绑定的账号
-	 */
-	protected String username;
-	/**
-	 * 绑定的账号密码
-	 */
-	protected String password;
-	/**
 	 * 手机号码信息
 	 */
 	protected WxMaPhoneNumberInfo phoneNumberInfo;
@@ -80,6 +72,7 @@ public class WxJsCodeAuthenticationToken extends DefaultAuthenticationToken {
 	public WxJsCodeAuthenticationToken( String jscode, String sessionKey, String unionid, String openid, 
 			String signature, String rawData, String encryptedData, String iv, String username, String password, 
 			String host) {
+		super(username,  password, true, host);
 		this.jscode = jscode;
 		this.sessionKey = sessionKey;
 		this.unionid = unionid;
@@ -88,9 +81,6 @@ public class WxJsCodeAuthenticationToken extends DefaultAuthenticationToken {
 		this.rawData = rawData;
 		this.encryptedData = encryptedData;
 		this.iv = iv;
-		this.username = username;
-		this.password = password;
-		this.setHost(host);
 	}
 	
 	public String getJscode() {

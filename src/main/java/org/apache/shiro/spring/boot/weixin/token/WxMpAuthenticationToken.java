@@ -40,7 +40,8 @@ public class WxMpAuthenticationToken extends DefaultAuthenticationToken {
 	 */
 	protected WxMpUser userInfo;
 	
-	public WxMpAuthenticationToken( String unionid, String openid, String host) {
+	public WxMpAuthenticationToken( String unionid, String openid, String username, String password, String host) {
+		super(username,  password, true, host);
 		this.unionid = unionid;
 		this.openid = openid;
 		this.setHost(host);
