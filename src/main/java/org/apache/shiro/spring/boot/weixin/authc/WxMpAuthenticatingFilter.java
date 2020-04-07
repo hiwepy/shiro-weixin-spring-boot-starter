@@ -21,14 +21,12 @@ import java.nio.charset.StandardCharsets;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.biz.authc.AuthcResponse;
 import org.apache.shiro.biz.utils.WebUtils;
 import org.apache.shiro.biz.web.filter.authc.AbstractTrustableAuthenticatingFilter;
 import org.apache.shiro.biz.web.servlet.http.HttpStatus;
 import org.apache.shiro.spring.boot.weixin.token.WxMpAuthenticationToken;
-import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -36,17 +34,19 @@ import org.springframework.http.MediaType;
 import com.alibaba.fastjson.JSONObject;
 
 /**
- * 小程序微信认证 (authentication)过滤器
+ * 公众号微信认证 (authentication)过滤器
  * @author ： <a href="https://github.com/hiwepy">hiwepy</a>
  */
 public class WxMpAuthenticatingFilter extends AbstractTrustableAuthenticatingFilter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(WxMpAuthenticatingFilter.class);
+    public static final String SPRING_SECURITY_FORM_CODE_KEY = "code";
     public static final String SPRING_SECURITY_FORM_UNIONID_KEY = "unionid";
     public static final String SPRING_SECURITY_FORM_OPENID_KEY = "openid";
     public static final String SPRING_SECURITY_FORM_USERNAME_KEY = "username";
     public static final String SPRING_SECURITY_FORM_PASSWORD_KEY = "password";
     
+    private String codeParameter = SPRING_SECURITY_FORM_CODE_KEY;
     private String unionidParameter = SPRING_SECURITY_FORM_UNIONID_KEY;
     private String openidParameter = SPRING_SECURITY_FORM_OPENID_KEY;
     private String usernameParameter = SPRING_SECURITY_FORM_USERNAME_KEY;
@@ -125,12 +125,15 @@ public class WxMpAuthenticatingFilter extends AbstractTrustableAuthenticatingFil
 			}
 		}
 		
+		String code = obtainCode(request);
 		String unionid = obtainUnionid(request);
         String openid = obtainOpenid(request);
         String username = obtainUsername(request); 
         String password = obtainPassword(request); 
 		
-        
+        if (code == null) {
+        	code = "";
+        }
         if (unionid == null) {
         	unionid = "";
         }
@@ -143,10 +146,15 @@ public class WxMpAuthenticatingFilter extends AbstractTrustableAuthenticatingFil
         if (password == null) {
         	password = "";
         }
-        WxMpLoginRequest loginRequest = new WxMpLoginRequest(unionid, openid, username, password);
+        
+        WxMpLoginRequest loginRequest = new WxMpLoginRequest(code, unionid, openid, username, password, null, null);
 		return new WxMpAuthenticationToken(loginRequest, getHost(request));
 	}
 	
+    protected String obtainCode(ServletRequest request) {
+        return request.getParameter(codeParameter);
+    }
+    
     protected String obtainUnionid(ServletRequest request) {
         return request.getParameter(unionidParameter);
     }
@@ -165,6 +173,14 @@ public class WxMpAuthenticatingFilter extends AbstractTrustableAuthenticatingFil
 
 	public String getUnionidParameter() {
 		return unionidParameter;
+	}
+
+	public String getCodeParameter() {
+		return codeParameter;
+	}
+
+	public void setCodeParameter(String codeParameter) {
+		this.codeParameter = codeParameter;
 	}
 
 	public void setUnionidParameter(String unionidParameter) {

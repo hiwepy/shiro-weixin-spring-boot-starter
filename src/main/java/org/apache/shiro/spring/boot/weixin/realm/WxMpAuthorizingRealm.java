@@ -1,16 +1,21 @@
 package org.apache.shiro.spring.boot.weixin.realm;
 
+import java.util.Objects;
+
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.biz.realm.AbstractAuthorizingRealm;
 import org.apache.shiro.biz.realm.AuthorizingRealmListener;
+import org.apache.shiro.spring.boot.weixin.authc.WxMpLoginRequest;
 import org.apache.shiro.spring.boot.weixin.token.WxMpAuthenticationToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
+import me.chanjar.weixin.mp.bean.result.WxMpOAuth2AccessToken;
 import me.chanjar.weixin.mp.bean.result.WxMpUser;
 
 /**
@@ -38,19 +43,36 @@ public class WxMpAuthorizingRealm extends AbstractAuthorizingRealm {
     	
     	AuthenticationException ex = null;
     	AuthenticationInfo info = null;
+
+    	WxMpLoginRequest loginRequest = (WxMpLoginRequest) token.getPrincipal();
     	
     	try {
     		
     		WxMpAuthenticationToken loginToken =  (WxMpAuthenticationToken) token;
-    		
-    		WxMpUser userInfo = getWxMpService().getUserService().userInfo(loginToken.getOpenid());
-			if (null == userInfo) {
-				
-			}
+    		loginToken.setCode(loginRequest.getCode());
+    		loginToken.setOpenid(loginRequest.getOpenid());
+			loginToken.setUnionid(loginRequest.getUnionid());
+			loginToken.setAccessToken(loginRequest.getAccessToken());
+			loginToken.setUserInfo(loginRequest.getUserInfo());
 			
-			loginToken.setOpenid(userInfo.getOpenId());
-			loginToken.setUnionid(userInfo.getUnionId());
-			loginToken.setUserInfo(userInfo);
+			// 表示需要根据code获取会话信息
+        	if ( Objects.isNull(loginRequest.getAccessToken()) && StringUtils.hasText(loginRequest.getCode()) ) {
+        		WxMpOAuth2AccessToken accessToken = getWxMpService().oauth2getAccessToken(loginRequest.getCode());
+    			if (null != accessToken) {
+    				loginToken.setAccessToken(accessToken);
+    			}
+     		}
+			
+        	if(Objects.isNull(loginRequest.getUserInfo()) && !Objects.isNull(loginRequest.getAccessToken()) ) {
+				try {
+					WxMpUser userInfo = getWxMpService().oauth2getUserInfo(loginToken.getAccessToken(), loginRequest.getLang());
+					if (null == userInfo) {
+						loginToken.setUserInfo(userInfo);
+					}
+				} catch (Exception e) {
+					throw new AuthenticationException(e);
+				}
+			}
 			
 			info = getRepository().getAuthenticationInfo(loginToken);
     		

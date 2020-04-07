@@ -28,8 +28,8 @@ import lombok.ToString;
 @ToString
 public class ShiroWxJsCodeAuthcProperties {
 
-	public static final String PREFIX = "shiro.weixin.jscode";
-	
+	public static final String PREFIX = "shiro.weixin.ma";
+
 	/** the jscode parameter name. Defaults to "jscode". */
     private String jscodeParameter = WxJsCodeAuthenticatingFilter.SPRING_SECURITY_FORM_JSCODE_KEY;
     /** the signature parameter name. Defaults to "signature". */
@@ -48,5 +48,6 @@ public class ShiroWxJsCodeAuthcProperties {
     private String usernameParameter = WxJsCodeAuthenticatingFilter.SPRING_SECURITY_FORM_USERNAME_KEY;
     /** the password parameter name. Defaults to "password". */
     private String passwordParameter = WxJsCodeAuthenticatingFilter.SPRING_SECURITY_FORM_PASSWORD_KEY;
+    
 	
 }
