@@ -41,12 +41,14 @@ public class WxMpAuthenticatingFilter extends AbstractTrustableAuthenticatingFil
 
 	private static final Logger LOG = LoggerFactory.getLogger(WxMpAuthenticatingFilter.class);
     public static final String SPRING_SECURITY_FORM_CODE_KEY = "code";
+	public static final String SPRING_SECURITY_FORM_STATE_KEY = "state";
     public static final String SPRING_SECURITY_FORM_UNIONID_KEY = "unionid";
     public static final String SPRING_SECURITY_FORM_OPENID_KEY = "openid";
     public static final String SPRING_SECURITY_FORM_USERNAME_KEY = "username";
     public static final String SPRING_SECURITY_FORM_PASSWORD_KEY = "password";
     
     private String codeParameter = SPRING_SECURITY_FORM_CODE_KEY;
+    private String stateParameter = SPRING_SECURITY_FORM_STATE_KEY;
     private String unionidParameter = SPRING_SECURITY_FORM_UNIONID_KEY;
     private String openidParameter = SPRING_SECURITY_FORM_OPENID_KEY;
     private String usernameParameter = SPRING_SECURITY_FORM_USERNAME_KEY;
@@ -126,6 +128,7 @@ public class WxMpAuthenticatingFilter extends AbstractTrustableAuthenticatingFil
 		}
 		
 		String code = obtainCode(request);
+		String state = obtainState(request);
 		String unionid = obtainUnionid(request);
         String openid = obtainOpenid(request);
         String username = obtainUsername(request); 
@@ -133,6 +136,9 @@ public class WxMpAuthenticatingFilter extends AbstractTrustableAuthenticatingFil
 		
         if (code == null) {
         	code = "";
+        }
+        if (state == null) {
+        	state = "";
         }
         if (unionid == null) {
         	unionid = "";
@@ -147,7 +153,7 @@ public class WxMpAuthenticatingFilter extends AbstractTrustableAuthenticatingFil
         	password = "";
         }
         
-        WxMpLoginRequest loginRequest = new WxMpLoginRequest(code, unionid, openid, username, password, null, null);
+        WxMpLoginRequest loginRequest = new WxMpLoginRequest(code, state, unionid, openid, username, password, null, null);
 		return new WxMpAuthenticationToken(loginRequest, getHost(request));
 	}
 	
@@ -155,6 +161,10 @@ public class WxMpAuthenticatingFilter extends AbstractTrustableAuthenticatingFil
         return request.getParameter(codeParameter);
     }
     
+	protected String obtainState(ServletRequest request) {
+        return request.getParameter(stateParameter);
+    }
+	
     protected String obtainUnionid(ServletRequest request) {
         return request.getParameter(unionidParameter);
     }
