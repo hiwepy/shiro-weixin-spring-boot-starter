@@ -16,6 +16,7 @@
 package org.apache.shiro.spring.boot.weixin;
 
 import org.apache.shiro.spring.boot.weixin.authc.WxMpAuthenticatingFilter;
+import org.apache.shiro.web.filter.authc.LogoutFilter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import lombok.Getter;
@@ -40,5 +41,9 @@ public class ShiroWxMpAuthcProperties {
     private String usernameParameter = WxMpAuthenticatingFilter.SPRING_SECURITY_FORM_USERNAME_KEY;
     /** the password parameter name. Defaults to "password". */
     private String passwordParameter = WxMpAuthenticatingFilter.SPRING_SECURITY_FORM_PASSWORD_KEY;
+    /**
+     * The URL to where the user will be redirected after logout.
+     */
+	private String redirectUrl = LogoutFilter.DEFAULT_REDIRECT_URL;
 	
 }
