@@ -1,6 +1,6 @@
 package org.apache.shiro.spring.boot;
 
-import org.apache.shiro.spring.boot.weixin.ShiroWxJsCodeAuthcProperties;
+import org.apache.shiro.spring.boot.weixin.ShiroWxMaAuthcProperties;
 import org.apache.shiro.spring.boot.weixin.ShiroWxMpAuthcProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Configuration;
 	"org.apache.shiro.spring.boot.ShiroBizWebFilterConfiguration" // spring-boot-starter-shiro-biz
 })
 @ConditionalOnProperty(prefix = ShiroWeiXinProperties.PREFIX, value = "enabled", havingValue = "true")
-@EnableConfigurationProperties({ ShiroWeiXinProperties.class, ShiroWxJsCodeAuthcProperties.class, ShiroWxMpAuthcProperties.class })
+@EnableConfigurationProperties({ ShiroWeiXinProperties.class, ShiroWxMaAuthcProperties.class, ShiroWxMpAuthcProperties.class })
 public class ShiroWeiXinWebFilterConfiguration implements ApplicationContextAware {
 
 	protected static final Logger LOG = LoggerFactory.getLogger(ShiroWeiXinWebFilterConfiguration.class);

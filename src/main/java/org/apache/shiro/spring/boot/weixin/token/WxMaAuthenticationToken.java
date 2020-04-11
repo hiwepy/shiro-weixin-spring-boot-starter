@@ -16,7 +16,7 @@
 package org.apache.shiro.spring.boot.weixin.token;
 
 import org.apache.shiro.biz.authc.token.DefaultAuthenticationToken;
-import org.apache.shiro.spring.boot.weixin.authc.WxJsCodeLoginRequest;
+import org.apache.shiro.spring.boot.weixin.authc.WxMaLoginRequest;
 
 import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
 import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
@@ -27,9 +27,9 @@ import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
  * @author ： <a href="https://github.com/hiwepy">hiwepy</a>
  */
 @SuppressWarnings("serial")
-public class WxJsCodeAuthenticationToken extends DefaultAuthenticationToken {
+public class WxMaAuthenticationToken extends DefaultAuthenticationToken {
 
-	protected WxJsCodeLoginRequest principal;
+	protected WxMaLoginRequest principal;
 	
 	/**
 	 * 第三方平台UnionID（通常指第三方账号体系下用户的唯一ID）
@@ -52,7 +52,7 @@ public class WxJsCodeAuthenticationToken extends DefaultAuthenticationToken {
 	 */
 	protected WxMaUserInfo userInfo;
 
-	public WxJsCodeAuthenticationToken( WxJsCodeLoginRequest request, String host) {
+	public WxMaAuthenticationToken( WxMaLoginRequest request, String host) {
 		super(request.getUsername(),  request.getPassword(), true, host);
 		this.principal = request;
 		this.unionid = request.getUnionid();

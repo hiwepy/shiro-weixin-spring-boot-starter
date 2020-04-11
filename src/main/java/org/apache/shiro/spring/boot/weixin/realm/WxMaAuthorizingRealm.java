@@ -7,8 +7,8 @@ import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.biz.realm.AbstractAuthorizingRealm;
 import org.apache.shiro.biz.realm.AuthorizingRealmListener;
-import org.apache.shiro.spring.boot.weixin.authc.WxJsCodeLoginRequest;
-import org.apache.shiro.spring.boot.weixin.token.WxJsCodeAuthenticationToken;
+import org.apache.shiro.spring.boot.weixin.authc.WxMaLoginRequest;
+import org.apache.shiro.spring.boot.weixin.token.WxMaAuthenticationToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -22,18 +22,18 @@ import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
  * WeiXin AuthorizingRealm
  * @author 		： <a href="https://github.com/hiwepy">hiwepy</a>
  */
-public class WxJsCodeAuthorizingRealm extends AbstractAuthorizingRealm {
+public class WxMaAuthorizingRealm extends AbstractAuthorizingRealm {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(WxJsCodeAuthorizingRealm.class);
+	private static final Logger LOG = LoggerFactory.getLogger(WxMaAuthorizingRealm.class);
 	private final WxMaService wxMaService;
 	 
-    public WxJsCodeAuthorizingRealm(final WxMaService wxMaService) {
+    public WxMaAuthorizingRealm(final WxMaService wxMaService) {
         this.wxMaService = wxMaService;
     }
     
 	@Override
 	public Class<?> getAuthenticationTokenClass() {
-		return WxJsCodeAuthenticationToken.class;// 此Realm只支持SmsLoginToken
+		return WxMaAuthenticationToken.class;// 此Realm只支持SmsLoginToken
 	}
 	
 	@Override
@@ -44,11 +44,11 @@ public class WxJsCodeAuthorizingRealm extends AbstractAuthorizingRealm {
     	AuthenticationException ex = null;
     	AuthenticationInfo info = null;
 
-    	WxJsCodeLoginRequest loginRequest = (WxJsCodeLoginRequest) token.getPrincipal();
+    	WxMaLoginRequest loginRequest = (WxMaLoginRequest) token.getPrincipal();
     	
     	try {
     		
-    		WxJsCodeAuthenticationToken loginToken =  (WxJsCodeAuthenticationToken) token;
+    		WxMaAuthenticationToken loginToken =  (WxMaAuthenticationToken) token;
         	loginToken.setOpenid(loginRequest.getOpenid());
 			loginToken.setUnionid(loginRequest.getUnionid());
 			loginToken.setSessionKey(loginRequest.getSessionKey());

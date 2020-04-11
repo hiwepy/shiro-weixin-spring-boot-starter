@@ -30,7 +30,7 @@ import org.apache.shiro.biz.utils.WebUtils;
 import org.apache.shiro.biz.web.servlet.http.HttpStatus;
 import org.apache.shiro.spring.boot.jwt.JwtPayloadRepository;
 import org.apache.shiro.spring.boot.utils.SubjectJwtUtils;
-import org.apache.shiro.spring.boot.weixin.token.WxJsCodeAuthenticationToken;
+import org.apache.shiro.spring.boot.weixin.token.WxMaAuthenticationToken;
 import org.apache.shiro.spring.boot.weixin.token.WxMpAuthenticationToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.http.MediaType;
@@ -55,7 +55,7 @@ public class WxAuthenticationSuccessHandler implements AuthenticationSuccessHand
 	
 	@Override
 	public boolean supports(AuthenticationToken token) {
-		return SubjectUtils.isAssignableFrom(token.getClass(), WxJsCodeAuthenticationToken.class, WxMpAuthenticationToken.class);
+		return SubjectUtils.isAssignableFrom(token.getClass(), WxMaAuthenticationToken.class, WxMpAuthenticationToken.class);
 	}
 
 	@Override

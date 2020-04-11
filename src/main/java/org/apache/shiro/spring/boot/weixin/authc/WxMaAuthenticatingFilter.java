@@ -26,7 +26,7 @@ import org.apache.shiro.biz.authc.AuthcResponse;
 import org.apache.shiro.biz.utils.WebUtils;
 import org.apache.shiro.biz.web.filter.authc.AbstractTrustableAuthenticatingFilter;
 import org.apache.shiro.biz.web.servlet.http.HttpStatus;
-import org.apache.shiro.spring.boot.weixin.token.WxJsCodeAuthenticationToken;
+import org.apache.shiro.spring.boot.weixin.token.WxMaAuthenticationToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -37,9 +37,9 @@ import com.alibaba.fastjson.JSONObject;
  * 小程序微信认证 (authentication)过滤器
  * @author ： <a href="https://github.com/hiwepy">hiwepy</a>
  */
-public class WxJsCodeAuthenticatingFilter extends AbstractTrustableAuthenticatingFilter {
+public class WxMaAuthenticatingFilter extends AbstractTrustableAuthenticatingFilter {
 
-	private static final Logger LOG = LoggerFactory.getLogger(WxJsCodeAuthenticatingFilter.class);
+	private static final Logger LOG = LoggerFactory.getLogger(WxMaAuthenticatingFilter.class);
 	public static final String SPRING_SECURITY_FORM_JSCODE_KEY = "jscode";
 	public static final String SPRING_SECURITY_FORM_SESSIONKEY_KEY = "sessionKey";
 	public static final String SPRING_SECURITY_FORM_UNIONID_KEY = "unionid";
@@ -62,7 +62,7 @@ public class WxJsCodeAuthenticatingFilter extends AbstractTrustableAuthenticatin
     private String usernameParameter = SPRING_SECURITY_FORM_USERNAME_KEY;
     private String passwordParameter = SPRING_SECURITY_FORM_PASSWORD_KEY;
 	
-	public WxJsCodeAuthenticatingFilter() {
+	public WxMaAuthenticatingFilter() {
 		super();
 	}
 	
@@ -104,8 +104,8 @@ public class WxJsCodeAuthenticatingFilter extends AbstractTrustableAuthenticatin
 		// Post && JSON
 		if(WebUtils.isObjectRequest(request)) {
 			try {
-				WxJsCodeLoginRequest loginRequest = objectMapper.readValue(request.getReader(), WxJsCodeLoginRequest.class);
-				return new WxJsCodeAuthenticationToken(loginRequest, getHost(request));
+				WxMaLoginRequest loginRequest = objectMapper.readValue(request.getReader(), WxMaLoginRequest.class);
+				return new WxMaAuthenticationToken(loginRequest, getHost(request));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -152,9 +152,9 @@ public class WxJsCodeAuthenticatingFilter extends AbstractTrustableAuthenticatin
         if (password == null) {
         	password = "";
         }
-        WxJsCodeLoginRequest loginRequest = new WxJsCodeLoginRequest(jscode, sessionKey, unionid, openid, signature, rawData, encryptedData, 
+        WxMaLoginRequest loginRequest = new WxMaLoginRequest(jscode, sessionKey, unionid, openid, signature, rawData, encryptedData, 
         		iv, username, password, null);
-		return new WxJsCodeAuthenticationToken(loginRequest, getHost(request));
+		return new WxMaAuthenticationToken(loginRequest, getHost(request));
 	}
 
 	protected String obtainJscode(ServletRequest request) {
