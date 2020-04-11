@@ -2,6 +2,7 @@ package org.apache.shiro.spring.boot;
 
 import org.apache.shiro.spring.boot.jwt.JwtPayloadRepository;
 import org.apache.shiro.spring.boot.weixin.ShiroWxJsCodeAuthcProperties;
+import org.apache.shiro.spring.boot.weixin.ShiroWxMpAuthcProperties;
 import org.apache.shiro.spring.boot.weixin.authc.WxAuthenticationSuccessHandler;
 import org.apache.shiro.spring.web.config.AbstractShiroWebConfiguration;
 import org.springframework.beans.BeansException;
@@ -19,7 +20,7 @@ import org.springframework.context.annotation.Configuration;
 	"org.apache.shiro.spring.boot.ShiroBizWebAutoConfiguration" // spring-boot-starter-shiro-biz
 })
 @ConditionalOnProperty(prefix = ShiroWeiXinProperties.PREFIX, value = "enabled", havingValue = "true")
-@EnableConfigurationProperties({ ShiroWeiXinProperties.class, ShiroWxJsCodeAuthcProperties.class })
+@EnableConfigurationProperties({ ShiroWeiXinProperties.class, ShiroWxJsCodeAuthcProperties.class, ShiroWxMpAuthcProperties.class })
 public class ShiroWeiXinWebAutoConfiguration extends AbstractShiroWebConfiguration implements ApplicationContextAware {
 
 	private ApplicationContext applicationContext;
