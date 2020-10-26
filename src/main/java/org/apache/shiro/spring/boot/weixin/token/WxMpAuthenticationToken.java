@@ -18,8 +18,8 @@ package org.apache.shiro.spring.boot.weixin.token;
 import org.apache.shiro.biz.authc.token.DefaultAuthenticationToken;
 import org.apache.shiro.spring.boot.weixin.authc.WxMpLoginRequest;
 
-import me.chanjar.weixin.mp.bean.result.WxMpOAuth2AccessToken;
-import me.chanjar.weixin.mp.bean.result.WxMpUser;
+import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
+import me.chanjar.weixin.common.bean.oauth2.WxOAuth2AccessToken;
 
 /**
  * 微信公众号 Login Token
@@ -50,11 +50,11 @@ public class WxMpAuthenticationToken extends DefaultAuthenticationToken {
 	/**
 	 * 网页授权接口调用凭证
 	 */
-	protected WxMpOAuth2AccessToken accessToken;
+	protected WxOAuth2AccessToken accessToken;
 	/**
 	 * 微信用户信息
 	 */
-	protected WxMpUser userInfo;
+	protected WxOAuth2UserInfo userInfo;
 	
 	public WxMpAuthenticationToken( WxMpLoginRequest request, String host) {
 		super(request.getUsername(),  request.getPassword(), true, host);
@@ -101,19 +101,19 @@ public class WxMpAuthenticationToken extends DefaultAuthenticationToken {
 		this.lang = lang;
 	}
 
-	public WxMpOAuth2AccessToken getAccessToken() {
+	public WxOAuth2AccessToken getAccessToken() {
 		return accessToken;
 	}
 
-	public void setAccessToken(WxMpOAuth2AccessToken accessToken) {
+	public void setAccessToken(WxOAuth2AccessToken accessToken) {
 		this.accessToken = accessToken;
 	}
 
-	public WxMpUser getUserInfo() {
+	public WxOAuth2UserInfo getUserInfo() {
 		return userInfo;
 	}
 
-	public void setUserInfo(WxMpUser userInfo) {
+	public void setUserInfo(WxOAuth2UserInfo userInfo) {
 		this.userInfo = userInfo;
 	}
 

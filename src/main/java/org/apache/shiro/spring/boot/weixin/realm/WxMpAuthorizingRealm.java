@@ -13,9 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
+import me.chanjar.weixin.common.bean.oauth2.WxOAuth2AccessToken;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
-import me.chanjar.weixin.mp.bean.result.WxMpOAuth2AccessToken;
 import me.chanjar.weixin.mp.bean.result.WxMpUser;
 
 /**
@@ -58,7 +59,7 @@ public class WxMpAuthorizingRealm extends AbstractAuthorizingRealm {
 			
 			// 表示需要根据code获取会话信息
         	if ( Objects.isNull(loginRequest.getAccessToken()) && StringUtils.hasText(loginRequest.getCode()) ) {
-        		WxMpOAuth2AccessToken accessToken = getWxMpService().oauth2getAccessToken(loginRequest.getCode());
+        		WxOAuth2AccessToken accessToken = getWxMpService().getOAuth2Service().getAccessToken(loginRequest.getCode());
     			if (null != accessToken) {
     				loginToken.setAccessToken(accessToken);
     			}
@@ -66,7 +67,7 @@ public class WxMpAuthorizingRealm extends AbstractAuthorizingRealm {
 			
         	if(Objects.isNull(loginRequest.getUserInfo()) && !Objects.isNull(loginRequest.getAccessToken()) ) {
 				try {
-					WxMpUser userInfo = getWxMpService().oauth2getUserInfo(loginToken.getAccessToken(), loginRequest.getLang());
+					WxOAuth2UserInfo userInfo = getWxMpService().getOAuth2Service().getUserInfo(loginRequest.getAccessToken(), loginRequest.getLang());
 					if (null == userInfo) {
 						loginToken.setUserInfo(userInfo);
 					}
