@@ -1,4 +1,4 @@
-# shiro-sms-spring-boot-starter
+# shiro-weixin-spring-boot-starter
 
 ### 说明
 
@@ -12,8 +12,8 @@
 ``` xml
 <dependency>
 	<groupId>${project.groupId}</groupId>
-	<artifactId>shiro-sms-spring-boot-starter</artifactId>
-	<version>${project.version}</version>
+	<artifactId>shiro-weixin-spring-boot-starter</artifactId>
+	<version>1.0.0.RELEASE</version>
 </dependency>
 ```
 
