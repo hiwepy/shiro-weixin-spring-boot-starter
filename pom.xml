@@ -371,9 +371,11 @@
         <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
         <maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>
 		<maven-nexus-staging-plugin.version>1.6.8</maven-nexus-staging-plugin.version>
-		<spring-boot-starter-shiro-biz.version>1.0.9-SNAPSHOT</spring-boot-starter-shiro-biz.version>
+		<spring-boot-starter-shiro-biz.version>1.0.9.RELEASE</spring-boot-starter-shiro-biz.version>
 		<spring-boot-starter-shiro-jwt.version>1.1.1-SNAPSHOT</spring-boot-starter-shiro-jwt.version>
-		<weixin-java.version>3.9.5.B</weixin-java.version>
+		<weixin-java.version>4.0.4.B</weixin-java.version>
+		<weixin-qrcode.version>1.2</weixin-qrcode.version>
+		<weixin-emoji.version>1.0.1</weixin-emoji.version>
 	</properties>
 	
 	<dependencyManagement>
@@ -419,7 +421,7 @@
 			<dependency>
 				<groupId>com.github.binarywang</groupId>
 				<artifactId>qrcode-utils</artifactId>
-				<version>1.1</version>
+				<version>${weixin-qrcode.version}</version>
 			</dependency>
 			<!-- 微信小程序Java SDK : https://mvnrepository.com/artifact/com.github.binarywang/weixin-java-miniapp -->
 			<dependency>
@@ -437,15 +439,8 @@
 			<dependency>
 				<groupId>com.github.binarywang</groupId>
 				<artifactId>java-emoji-converter</artifactId>
-				<version>0.1.1</version>
+				<version>${weixin-emoji.version}</version>
 			</dependency>
-			<!-- https://mvnrepository.com/artifact/io.github.rcarlosdasilva/weixin -->
-			<dependency>
-				<groupId>io.github.rcarlosdasilva</groupId>
-				<artifactId>weixin</artifactId>
-				<version>0.6</version>
-			</dependency>
-			
 			<!-- https://mvnrepository.com/artifact/com.github.binarywang/wx-java-open-spring-boot-starter -->
 			<dependency>
 			    <groupId>com.github.binarywang</groupId>
