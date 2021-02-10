@@ -84,6 +84,11 @@ public class WxAuthenticationSuccessHandler implements AuthenticationSuccessHand
 
 	}
 
+	@Override
+	public int getOrder() {
+		return Integer.MAX_VALUE - 4;
+	}
+	
 	public JwtPayloadRepository getJwtPayloadRepository() {
 		return jwtPayloadRepository;
 	}
