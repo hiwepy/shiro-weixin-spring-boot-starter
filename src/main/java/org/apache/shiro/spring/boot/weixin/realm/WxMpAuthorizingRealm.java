@@ -2,6 +2,7 @@ package org.apache.shiro.spring.boot.weixin.realm;
 
 import java.util.Objects;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -24,66 +25,57 @@ import me.chanjar.weixin.mp.bean.result.WxMpUser;
  * https://developers.weixin.qq.com/doc/oplatform/Third-party_Platforms/Official_Accounts/official_account_website_authorization.html
  * @author 		： <a href="https://github.com/hiwepy">hiwepy</a>
  */
+@Slf4j
 public class WxMpAuthorizingRealm extends AbstractAuthorizingRealm {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(WxMpAuthorizingRealm.class);
+
 	private final WxMpService wxMpService;
-	 
+
     public WxMpAuthorizingRealm(final WxMpService wxMpService) {
         this.wxMpService = wxMpService;
     }
-    
+
 	@Override
 	public Class<?> getAuthenticationTokenClass() {
-		return WxMpAuthenticationToken.class;// 此Realm只支持SmsLoginToken
+		return WxMpAuthenticationToken.class;
 	}
-	
+
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-		
-		LOG.info("Handle authentication token {}.", new Object[] { token });
-    	
+
+		log.info("Handle authentication token {}.", token);
+
     	AuthenticationException ex = null;
     	AuthenticationInfo info = null;
-
-    	WxMpLoginRequest loginRequest = (WxMpLoginRequest) token.getPrincipal();
-    	
     	try {
-    		
+
     		WxMpAuthenticationToken loginToken =  (WxMpAuthenticationToken) token;
-    		loginToken.setCode(loginRequest.getCode());
-    		loginToken.setOpenid(loginRequest.getOpenid());
-			loginToken.setUnionid(loginRequest.getUnionid());
-			loginToken.setAccessToken(loginRequest.getAccessToken());
-			loginToken.setUserInfo(loginRequest.getUserInfo());
-			
+			WxMpLoginRequest loginRequest = (WxMpLoginRequest) loginToken.getPrincipal();
+
 			// 表示需要根据code获取会话信息
-        	if ( Objects.isNull(loginRequest.getAccessToken()) && StringUtils.hasText(loginRequest.getCode()) ) {
-        		WxOAuth2AccessToken accessToken = getWxMpService().getOAuth2Service().getAccessToken(loginRequest.getCode());
-    			if (null != accessToken) {
-    				loginToken.setAccessToken(accessToken);
-    			}
-     		}
-			
-        	if(Objects.isNull(loginRequest.getUserInfo()) && !Objects.isNull(loginRequest.getAccessToken()) ) {
-				try {
-					WxOAuth2UserInfo userInfo = getWxMpService().getOAuth2Service().getUserInfo(loginRequest.getAccessToken(), loginRequest.getLang());
-					if (null == userInfo) {
-						loginToken.setUserInfo(userInfo);
-					}
-				} catch (Exception e) {
-					throw new AuthenticationException(e);
+			if (StringUtils.hasText(loginRequest.getCode()) ) {
+				WxOAuth2AccessToken accessToken = getWxMpService().getOAuth2Service().getAccessToken(loginRequest.getCode());
+				if (Objects.nonNull(accessToken)) {
+					loginRequest.setAccessToken(accessToken);
+					loginRequest.setOpenid(accessToken.getOpenId());
+					loginRequest.setUnionid(accessToken.getUnionId());
 				}
 			}
-			
+
+			if(Objects.isNull(loginRequest.getUserInfo()) && Objects.nonNull(loginRequest.getAccessToken()) ) {
+				WxOAuth2UserInfo userInfo = getWxMpService().getOAuth2Service().getUserInfo(loginRequest.getAccessToken(), loginRequest.getLang());
+				if (Objects.nonNull(userInfo)) {
+					loginRequest.setUserInfo(userInfo);
+				}
+			}
+
 			info = getRepository().getAuthenticationInfo(loginToken);
-    		
+
 		} catch (AuthenticationException e) {
 			ex = e;
 		} catch (WxErrorException e) {
 			ex = new AuthenticationException(e);
 		}
-		
+
 		//调用事件监听器
 		if(getRealmsListeners() != null && getRealmsListeners().size() > 0){
 			for (AuthorizingRealmListener realmListener : getRealmsListeners()) {
@@ -94,14 +86,14 @@ public class WxMpAuthorizingRealm extends AbstractAuthorizingRealm {
 				}
 			}
 		}
-		
+
 		if(ex != null){
 			throw ex;
 		}
-		
+
 		return info;
 	}
-	
+
 	public WxMpService getWxMpService() {
 		return wxMpService;
 	}

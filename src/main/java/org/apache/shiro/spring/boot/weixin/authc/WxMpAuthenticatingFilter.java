@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.biz.authc.AuthcResponse;
@@ -40,35 +41,29 @@ import com.alibaba.fastjson.JSONObject;
 public class WxMpAuthenticatingFilter extends AbstractTrustableAuthenticatingFilter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(WxMpAuthenticatingFilter.class);
-    public static final String SPRING_SECURITY_FORM_CODE_KEY = "code";
+	public static final String SPRING_SECURITY_FORM_CODE_KEY = "code";
 	public static final String SPRING_SECURITY_FORM_STATE_KEY = "state";
-    public static final String SPRING_SECURITY_FORM_UNIONID_KEY = "unionid";
-    public static final String SPRING_SECURITY_FORM_OPENID_KEY = "openid";
-    public static final String SPRING_SECURITY_FORM_USERNAME_KEY = "username";
-    public static final String SPRING_SECURITY_FORM_PASSWORD_KEY = "password";
-    
-    private String codeParameter = SPRING_SECURITY_FORM_CODE_KEY;
-    private String stateParameter = SPRING_SECURITY_FORM_STATE_KEY;
-    private String unionidParameter = SPRING_SECURITY_FORM_UNIONID_KEY;
-    private String openidParameter = SPRING_SECURITY_FORM_OPENID_KEY;
-    private String usernameParameter = SPRING_SECURITY_FORM_USERNAME_KEY;
-    private String passwordParameter = SPRING_SECURITY_FORM_PASSWORD_KEY;
-	
+	public static final String SPRING_SECURITY_FORM_TOKEN_KEY = "token";
+
+	private String codeParameter = SPRING_SECURITY_FORM_CODE_KEY;
+	private String stateParameter = SPRING_SECURITY_FORM_STATE_KEY;
+	private String tokenParameter = SPRING_SECURITY_FORM_TOKEN_KEY;
+
 	public WxMpAuthenticatingFilter() {
 		super();
 	}
-	
+
 	@Override
 	protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
 		return false;
 	}
-	
+
 	@Override
 	protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
-		
-		// 1、判断是否登录请求 
+
+		// 1、判断是否登录请求
 		if (isLoginRequest(request, response)) {
-			
+
 			if (isLoginSubmission(request, response)) {
 				if (LOG.isTraceEnabled()) {
 					LOG.trace("Login submission detected.  Attempting to execute login.");
@@ -79,35 +74,35 @@ public class WxMpAuthenticatingFilter extends AbstractTrustableAuthenticatingFil
 				if (LOG.isTraceEnabled()) {
 					LOG.trace(mString);
 				}
-				
+
 				WebUtils.toHttp(response).setStatus(HttpStatus.SC_OK);
 				response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 				response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
-				
+
 				// Response Authentication status information
 				JSONObject.writeJSONString(response.getWriter(), AuthcResponse.fail(HttpStatus.SC_BAD_REQUEST, mString));
-				
+
 				return false;
 			}
 		}
 		// 2、未授权情况
 		else {
-			
+
 			String mString = "Attempting to access a path which requires authentication. ";
-			if (LOG.isTraceEnabled()) { 
+			if (LOG.isTraceEnabled()) {
 				LOG.trace(mString);
 			}
-			
+
 			// Ajax 请求：响应json数据对象
 			if (WebUtils.isAjaxRequest(request)) {
-				
+
 				WebUtils.toHttp(response).setStatus(HttpStatus.SC_OK);
 				response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 				response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
-				
+
 				// Response Authentication status information
 				JSONObject.writeJSONString(response.getWriter(), AuthcResponse.fail(HttpStatus.SC_UNAUTHORIZED, mString));
-				
+
 				return false;
 			}
 			// 普通请求：重定向到登录页
@@ -115,7 +110,7 @@ public class WxMpAuthenticatingFilter extends AbstractTrustableAuthenticatingFil
 			return false;
 		}
 	}
-	
+
 	@Override
 	protected AuthenticationToken createToken(ServletRequest request, ServletResponse response) {
 		// Post && JSON
@@ -126,63 +121,35 @@ public class WxMpAuthenticatingFilter extends AbstractTrustableAuthenticatingFil
 			} catch (IOException e) {
 			}
 		}
-		
+
 		String code = obtainCode(request);
 		String state = obtainState(request);
-		String unionid = obtainUnionid(request);
-        String openid = obtainOpenid(request);
-        String username = obtainUsername(request); 
-        String password = obtainPassword(request); 
-		
-        if (code == null) {
-        	code = "";
-        }
-        if (state == null) {
-        	state = "";
-        }
-        if (unionid == null) {
-        	unionid = "";
-        }
-        if (openid == null) {
-        	openid = "";
-        }
-        if (username == null) {
-        	username = "";
-        }
-        if (password == null) {
-        	password = "";
-        }
-        
-        WxMpLoginRequest loginRequest = new WxMpLoginRequest(code, state, unionid, openid, username, password, null, null);
+		String token = obtainToken(request);
+
+		if (code == null) {
+			code = "";
+		}
+		if (state == null) {
+			state = "";
+		}
+		if (token == null) {
+			token = "";
+		}
+
+        WxMpLoginRequest loginRequest = new WxMpLoginRequest(code, state, token);
 		return new WxMpAuthenticationToken(loginRequest, getHost(request));
 	}
-	
+
     protected String obtainCode(ServletRequest request) {
         return request.getParameter(codeParameter);
     }
-    
+
 	protected String obtainState(ServletRequest request) {
         return request.getParameter(stateParameter);
     }
-	
-    protected String obtainUnionid(ServletRequest request) {
-        return request.getParameter(unionidParameter);
-    }
-    
-    protected String obtainOpenid(ServletRequest request) {
-        return request.getParameter(openidParameter);
-    }
-    
-    protected String obtainUsername(ServletRequest request) {
-        return request.getParameter(usernameParameter);
-    }
-    
-    protected String obtainPassword(ServletRequest request) {
-        return request.getParameter(passwordParameter);
-    }
 
-	public String getUnionidParameter() {
-		return unionidParameter;
+	protected String obtainToken(ServletRequest request) {
+		return request.getParameter(tokenParameter);
 	}
 
 	public String getCodeParameter() {
@@ -193,32 +160,12 @@ public class WxMpAuthenticatingFilter extends AbstractTrustableAuthenticatingFil
 		this.codeParameter = codeParameter;
 	}
 
-	public void setUnionidParameter(String unionidParameter) {
-		this.unionidParameter = unionidParameter;
+	public void setTokenParameter(String tokenParameter) {
+		this.tokenParameter = tokenParameter;
 	}
 
-	public String getOpenidParameter() {
-		return openidParameter;
+	public String getTokenParameter() {
+		return tokenParameter;
 	}
 
-	public void setOpenidParameter(String openidParameter) {
-		this.openidParameter = openidParameter;
-	}
-
-	public String getUsernameParameter() {
-		return usernameParameter;
-	}
-
-	public void setUsernameParameter(String usernameParameter) {
-		this.usernameParameter = usernameParameter;
-	}
-
-	public String getPasswordParameter() {
-		return passwordParameter;
-	}
-
-	public void setPasswordParameter(String passwordParameter) {
-		this.passwordParameter = passwordParameter;
-	}
-	
 }

@@ -18,91 +18,24 @@ package org.apache.shiro.spring.boot.weixin.token;
 import org.apache.shiro.biz.authc.token.DefaultAuthenticationToken;
 import org.apache.shiro.spring.boot.weixin.authc.WxMaLoginRequest;
 
-import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
-import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
-
 /**
  * 微信小程序 Login Token
- * 
+ *
  * @author ： <a href="https://github.com/hiwepy">hiwepy</a>
  */
 @SuppressWarnings("serial")
 public class WxMaAuthenticationToken extends DefaultAuthenticationToken {
 
 	protected WxMaLoginRequest principal;
-	
-	/**
-	 * 第三方平台UnionID（通常指第三方账号体系下用户的唯一ID）
-	 */
-	protected String unionid;
-	/**
-	 * 第三方平台OpenID（通常指第三方账号体系下某应用中用户的唯一ID）
-	 */
-	protected String openid;
-	/**
-	 * 第三方平台授权登录会话Key
-	 */
-	protected String sessionKey;
-    /**
-	 * 手机号码信息
-	 */
-	protected WxMaPhoneNumberInfo phoneNumberInfo;
-	/**
-	 * 用户信息
-	 */
-	protected WxMaUserInfo userInfo;
 
 	public WxMaAuthenticationToken( WxMaLoginRequest request, String host) {
-		super(request.getUsername(),  request.getPassword(), true, host);
 		this.principal = request;
-		this.unionid = request.getUnionid();
-		this.openid = request.getOpenid();
-		this.userInfo = request.getUserInfo();
+		setHost(host);
 	}
-	
+
 	@Override
 	public Object getPrincipal() {
 		return principal;
-	}
-
-	public String getUnionid() {
-		return unionid;
-	}
-
-	public void setUnionid(String unionid) {
-		this.unionid = unionid;
-	}
-
-	public String getOpenid() {
-		return openid;
-	}
-
-	public void setOpenid(String openid) {
-		this.openid = openid;
-	}
-
-	public String getSessionKey() {
-		return sessionKey;
-	}
-
-	public void setSessionKey(String sessionKey) {
-		this.sessionKey = sessionKey;
-	}
-
-	public WxMaPhoneNumberInfo getPhoneNumberInfo() {
-		return phoneNumberInfo;
-	}
-
-	public void setPhoneNumberInfo(WxMaPhoneNumberInfo phoneNumberInfo) {
-		this.phoneNumberInfo = phoneNumberInfo;
-	}
-
-	public WxMaUserInfo getUserInfo() {
-		return userInfo;
-	}
-
-	public void setUserInfo(WxMaUserInfo userInfo) {
-		this.userInfo = userInfo;
 	}
 
 }

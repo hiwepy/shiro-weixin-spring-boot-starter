@@ -2,6 +2,7 @@ package org.apache.shiro.spring.boot.weixin.realm;
 
 import java.util.Objects;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -22,79 +23,74 @@ import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
  * WeiXin AuthorizingRealm
  * @author 		： <a href="https://github.com/hiwepy">hiwepy</a>
  */
+@Slf4j
 public class WxMaAuthorizingRealm extends AbstractAuthorizingRealm {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(WxMaAuthorizingRealm.class);
+
 	private final WxMaService wxMaService;
-	 
+
     public WxMaAuthorizingRealm(final WxMaService wxMaService) {
         this.wxMaService = wxMaService;
     }
-    
+
 	@Override
 	public Class<?> getAuthenticationTokenClass() {
-		return WxMaAuthenticationToken.class;// 此Realm只支持SmsLoginToken
+		return WxMaAuthenticationToken.class;
 	}
-	
+
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-		
-		LOG.info("Handle authentication token {}.", new Object[] { token });
-    	
+
+		log.info("Handle authentication token {}.", token);
+
     	AuthenticationException ex = null;
     	AuthenticationInfo info = null;
 
-    	WxMaLoginRequest loginRequest = (WxMaLoginRequest) token.getPrincipal();
-    	
     	try {
-    		
+
     		WxMaAuthenticationToken loginToken =  (WxMaAuthenticationToken) token;
-        	loginToken.setOpenid(loginRequest.getOpenid());
-			loginToken.setUnionid(loginRequest.getUnionid());
-			loginToken.setSessionKey(loginRequest.getSessionKey());
-			loginToken.setUserInfo(loginRequest.getUserInfo());
-			
-        	// 表示需要根据jscode获取会话信息
-        	if (!StringUtils.hasText(loginRequest.getSessionKey()) && StringUtils.hasText(loginRequest.getJscode()) ) {
-        		WxMaJscode2SessionResult sessionResult = getWxMaService().jsCode2SessionInfo(loginRequest.getJscode());
-    			if (null != sessionResult) {
-    				loginToken.setOpenid(sessionResult.getOpenid());
-    				loginToken.setUnionid(sessionResult.getUnionid());
-    				loginToken.setSessionKey(sessionResult.getSessionKey());
-    			}
-     		}
-			
+			WxMaLoginRequest loginRequest = (WxMaLoginRequest) loginToken.getPrincipal();
+
+			// 表示需要根据jscode获取会话信息
+			if (StringUtils.hasText(loginRequest.getJscode()) ) {
+				WxMaJscode2SessionResult sessionResult = getWxMaService().jsCode2SessionInfo(loginRequest.getJscode());
+				if (null != sessionResult) {
+					loginRequest.setOpenid(sessionResult.getOpenid());
+					loginRequest.setUnionid(sessionResult.getUnionid());
+					loginRequest.setSessionKey(sessionResult.getSessionKey());
+				}
+			}
+
 			if(StringUtils.hasText(loginRequest.getSessionKey()) && StringUtils.hasText(loginRequest.getEncryptedData()) && StringUtils.hasText(loginRequest.getIv()) ) {
 				try {
 					// 解密手机号码信息
 					WxMaPhoneNumberInfo phoneNumberInfo = getWxMaService().getUserService().getPhoneNoInfo(loginRequest.getSessionKey(), loginRequest.getEncryptedData(), loginRequest.getIv());
-					if ( !Objects.isNull(phoneNumberInfo) && StringUtils.hasText(phoneNumberInfo.getPhoneNumber())) {
-						loginToken.setPhoneNumberInfo(phoneNumberInfo);
+					if ( Objects.nonNull(phoneNumberInfo) && StringUtils.hasText(phoneNumberInfo.getPhoneNumber())) {
+						loginRequest.setPhoneNumberInfo(phoneNumberInfo);
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					log.error(e.getMessage());
 				}
 			}
 			if(Objects.isNull(loginRequest.getUserInfo()) && StringUtils.hasText(loginRequest.getSessionKey()) && StringUtils.hasText(loginRequest.getEncryptedData()) && StringUtils.hasText(loginRequest.getIv())) {
 				try {
 					// 解密用户信息
 					WxMaUserInfo userInfo = getWxMaService().getUserService().getUserInfo(loginRequest.getSessionKey(), loginRequest.getEncryptedData(), loginRequest.getIv() );
-					if (null == userInfo) {
-						loginToken.setUserInfo(userInfo);
+					if (Objects.nonNull(userInfo)) {
+						loginRequest.setUserInfo(userInfo);
 					}
 				} catch (Exception e) {
-					throw new AuthenticationException(e);
+					throw new AuthenticationException("微信登录认证失败.", e);
 				}
 			}
-			
+
 			info = getRepository().getAuthenticationInfo(loginToken);
-			 
+
 		} catch (AuthenticationException e) {
 			ex = e;
 		} catch (Exception e) {
 			ex = new AuthenticationException(e);
 		}
-		
+
 		//调用事件监听器
 		if(getRealmsListeners() != null && getRealmsListeners().size() > 0){
 			for (AuthorizingRealmListener realmListener : getRealmsListeners()) {
@@ -105,14 +101,14 @@ public class WxMaAuthorizingRealm extends AbstractAuthorizingRealm {
 				}
 			}
 		}
-		
+
 		if(ex != null){
 			throw ex;
 		}
-		
+
 		return info;
 	}
-	
+
 	public WxMaService getWxMaService() {
 		return wxMaService;
 	}

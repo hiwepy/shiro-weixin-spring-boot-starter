@@ -33,17 +33,12 @@ public class ShiroWxMpAuthcProperties {
 
 	/** the code parameter name. Defaults to "code". */
     private String codeParameter = WxMpAuthenticatingFilter.SPRING_SECURITY_FORM_CODE_KEY;
-    /** the unionid parameter name. Defaults to "unionid". */
-    private String unionidParameter = WxMpAuthenticatingFilter.SPRING_SECURITY_FORM_UNIONID_KEY;
-    /** the openid parameter name. Defaults to "openid". */
-    private String openidParameter = WxMpAuthenticatingFilter.SPRING_SECURITY_FORM_OPENID_KEY;
-    /** the username parameter name. Defaults to "username". */
-    private String usernameParameter = WxMpAuthenticatingFilter.SPRING_SECURITY_FORM_USERNAME_KEY;
-    /** the password parameter name. Defaults to "password". */
-    private String passwordParameter = WxMpAuthenticatingFilter.SPRING_SECURITY_FORM_PASSWORD_KEY;
+
+    /** the token parameter name. Defaults to "token". */
+    private String tokenParameter = WxMpAuthenticatingFilter.SPRING_SECURITY_FORM_TOKEN_KEY;
     /**
      * The URL to where the user will be redirected after logout.
      */
 	private String redirectUrl = LogoutFilter.DEFAULT_REDIRECT_URL;
-	
+
 }

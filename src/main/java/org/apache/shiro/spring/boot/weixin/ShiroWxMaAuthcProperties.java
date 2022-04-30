@@ -44,10 +44,7 @@ public class ShiroWxMaAuthcProperties {
     private String unionidParameter = WxMaAuthenticatingFilter.SPRING_SECURITY_FORM_UNIONID_KEY;
     /** the openid parameter name. Defaults to "openid". */
     private String openidParameter = WxMaAuthenticatingFilter.SPRING_SECURITY_FORM_OPENID_KEY;
-    /** the username parameter name. Defaults to "username". */
-    private String usernameParameter = WxMaAuthenticatingFilter.SPRING_SECURITY_FORM_USERNAME_KEY;
-    /** the password parameter name. Defaults to "password". */
-    private String passwordParameter = WxMaAuthenticatingFilter.SPRING_SECURITY_FORM_PASSWORD_KEY;
-    
-	
+    /** the token parameter name. Defaults to "token". */
+    private String tokenParameter = WxMaAuthenticatingFilter.SPRING_SECURITY_FORM_TOKEN_KEY;
+
 }

@@ -13,29 +13,30 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.apache.shiro.spring.boot.weixin.token;
+package org.apache.shiro.spring.boot.weixin.exception;
 
-import org.apache.shiro.biz.authc.token.DefaultAuthenticationToken;
-import org.apache.shiro.spring.boot.weixin.authc.WxMpLoginRequest;
+import org.apache.shiro.authc.AuthenticationException;
 
 /**
- * 微信公众号 Login Token
  *
- * @author ： <a href="https://github.com/hiwepy">hiwepy</a>
  */
 @SuppressWarnings("serial")
-public class WxMpAuthenticationToken extends DefaultAuthenticationToken {
+public class WxJsCodeNotFoundException extends AuthenticationException {
 
-	protected WxMpLoginRequest principal;
-
-	public WxMpAuthenticationToken( WxMpLoginRequest request, String host) {
-		this.principal = request;
-		this.setHost(host);
+	public WxJsCodeNotFoundException() {
+		super();
 	}
 
-	@Override
-	public WxMpLoginRequest getPrincipal() {
-		return principal;
+	public WxJsCodeNotFoundException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public WxJsCodeNotFoundException(String message) {
+		super(message);
+	}
+
+	public WxJsCodeNotFoundException(Throwable cause) {
+		super(cause);
 	}
 
 }
