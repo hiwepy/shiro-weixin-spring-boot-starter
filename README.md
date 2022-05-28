@@ -13,7 +13,7 @@
 <dependency>
 	<groupId>${project.groupId}</groupId>
 	<artifactId>shiro-weixin-spring-boot-starter</artifactId>
-	<version>${project.version}</version>
+	<version>2.0.0.RELEASE</version>
 </dependency>
 ```
 
